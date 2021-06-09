@@ -7,11 +7,11 @@
 #include "Handlers/SubscriptionHandler.hpp"
 #include "QvPluginBase.hpp"
 
-namespace Qv2ray::components::plugins
+namespace Qv2rayBase::Plugins
 {
     class PluginAPIHost;
     class PluginManagerCore;
-} // namespace Qv2ray::components::plugins
+} // namespace Qv2rayBase::Plugins
 
 namespace Qv2rayPlugin
 {
@@ -35,8 +35,8 @@ namespace Qv2rayPlugin
         friend class Qv2rayGUIInterface;
         friend class SubscriptionDecoder;
         friend class SubscriptionInterface;
-        friend class Qv2ray::components::plugins::PluginAPIHost;
-        friend class Qv2ray::components::plugins::PluginManagerCore;
+        friend class Qv2rayBase::Plugins::PluginAPIHost;
+        friend class Qv2rayBase::Plugins::PluginManagerCore;
 
       public:
         /// \internal

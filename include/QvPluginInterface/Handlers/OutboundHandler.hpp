@@ -8,6 +8,16 @@
 
 namespace Qv2rayPlugin::handlers::outbound
 {
+    enum class IOBOUND
+    {
+        DISPLAYNAME = 0,
+        PROTOCOL = 1,
+        ADDRESS = 2,
+        PORT = 3,
+        SNI = 4
+    };
+    typedef QMap<IOBOUND, QVariant> PluginIOBoundData;
+
     struct PluginOutboundDescriptor
     {
         QString ConnectionName;
@@ -30,5 +40,3 @@ namespace Qv2rayPlugin::handlers::outbound
         virtual QList<QString> SupportedLinkPrefixes() const = 0;
     };
 } // namespace Qv2rayPlugin::handlers::outbound
-
-using namespace ::Qv2rayPlugin::handlers::outbound;

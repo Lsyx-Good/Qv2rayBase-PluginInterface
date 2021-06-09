@@ -44,7 +44,7 @@ namespace Qv2rayPlugin::connections
         virtual const GroupId CreateGroup(const QString &displayName, bool isSubscription) = 0;
         virtual const std::optional<QString> DeleteGroup(const GroupId &id) = 0;
         virtual const std::optional<QString> RenameGroup(const GroupId &id, const QString &newName) = 0;
-        virtual const GroupRoutingId GetGroupRoutingId(const GroupId &id) = 0;
+        virtual const RoutingId GetGroupRoutingId(const GroupId &id) = 0;
     };
 
 } // namespace Qv2rayPlugin::connections

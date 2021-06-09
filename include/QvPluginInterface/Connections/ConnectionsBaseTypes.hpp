@@ -1,159 +1,116 @@
 #pragma once
-#include "QJsonStruct.hpp"
 
 #include <QHash>
-#include <QHashFunctions>
+#include <QJsonArray>
+#include <QJsonObject>
 #include <QString>
-#include <QtCore>
+#include <chrono>
 
-namespace Qv2rayPlugin::connections::types
+namespace Qv2rayPlugin::connections
 {
-    template<typename placeholder, typename BASETYPE_T>
-    class __QV_SAFETYPE_IMPL : public BASETYPE_T
+    using namespace std::chrono;
+    template<typename, typename BASETYPE_T>
+    struct SafeJsonType : public BASETYPE_T
     {
-      public:
-        template<class... Args>
-        explicit __QV_SAFETYPE_IMPL(Args... args) : BASETYPE_T(args...){};
-        const BASETYPE_T &raw() const
-        {
-            return *this;
-        }
+        // clang-format off
+        template<class... Args> explicit SafeJsonType(Args... args) : BASETYPE_T(args...) {};
+        const BASETYPE_T &raw() const { return *this; }
+        // clang-format on
     };
-
-#define SAFE_TYPEDEF(BASE, CLASS)                                                                                                                                        \
-    class __##CLASS##__;                                                                                                                                                 \
-    typedef __QV_SAFETYPE_IMPL<__##CLASS##__, BASE> CLASS;
-
-    // To prevent anonying QJsonObject misuse
-    SAFE_TYPEDEF(QJsonObject, INBOUNDSETTING);
-    SAFE_TYPEDEF(QJsonObject, OUTBOUNDSETTING);
-    SAFE_TYPEDEF(QJsonObject, INBOUND);
-    SAFE_TYPEDEF(QJsonObject, OUTBOUND);
-    SAFE_TYPEDEF(QJsonObject, CONFIGROOT);
-    SAFE_TYPEDEF(QJsonObject, ROUTING);
-    SAFE_TYPEDEF(QJsonObject, ROUTERULE);
-    //
-    SAFE_TYPEDEF(QJsonArray, OUTBOUNDS);
-    SAFE_TYPEDEF(QJsonArray, INBOUNDS);
-
-    enum class IOBOUND
-    {
-        DISPLAYNAME = 0,
-        PROTOCOL = 1,
-        ADDRESS = 2,
-        PORT = 3,
-        SNI = 4
-    };
-    typedef QMap<IOBOUND, QVariant> PluginIOBoundData;
 
     template<typename T>
-    class IDType
+    struct IDType
     {
-      public:
+        // clang-format off
         explicit IDType() : m_id("null"){};
         explicit IDType(const QString &id) : m_id(id){};
-        friend bool operator==(const IDType<T> &lhs, const IDType<T> &rhs)
-        {
-            return lhs.m_id == rhs.m_id;
-        }
-        friend bool operator!=(const IDType<T> &lhs, const IDType<T> &rhs)
-        {
-            return lhs.m_id != rhs.m_id;
-        }
-        const QString toString() const
-        {
-            return m_id;
-        }
-        void loadJson(const QJsonValue &d)
-        {
-            m_id = d.toString("null");
-        }
-        QJsonValue toJson() const
-        {
-            return m_id;
-        }
-        bool isEmpty() const
-        {
-            return m_id == "null";
-        }
+        bool operator==(const IDType<T> &rhs) const { return m_id == rhs.m_id; }
+        bool operator!=(const IDType<T> &rhs) const { return m_id != rhs.m_id; }
+        const QString toString() const { return m_id; }
+        bool isNull() const { return m_id == "null"; }
+        // clang-format on
 
       private:
         QString m_id;
     };
 
-    // Define several safetypes to prevent misuse of QString.
-#define DECL_IDTYPE(type)                                                                                                                                                \
+#define DeclareSafeJson(BASE, CLASS)                                                                                                                                     \
+    class __##CLASS##__;                                                                                                                                                 \
+    typedef SafeJsonType<__##CLASS##__, BASE> CLASS;
+
+#define DeclareSafeID(type)                                                                                                                                              \
     class __##type;                                                                                                                                                      \
     typedef IDType<__##type> type
 
-    DECL_IDTYPE(GroupId);
-    DECL_IDTYPE(ConnectionId);
-    DECL_IDTYPE(GroupRoutingId);
-    const inline GroupId DefaultGroupId{ "000000000000" };
+    DeclareSafeJson(QJsonObject, INBOUNDSETTING);
+    DeclareSafeJson(QJsonObject, OUTBOUNDSETTING);
+    DeclareSafeJson(QJsonObject, INBOUND);
+    DeclareSafeJson(QJsonObject, OUTBOUND);
+    DeclareSafeJson(QJsonObject, CONFIGROOT);
+    DeclareSafeJson(QJsonObject, ROUTING);
+    DeclareSafeJson(QJsonObject, ROUTERULE);
+    DeclareSafeJson(QJsonArray, OUTBOUNDS);
+    DeclareSafeJson(QJsonArray, INBOUNDS);
+
+    DeclareSafeID(GroupId);
+    DeclareSafeID(ConnectionId);
+    DeclareSafeID(RoutingId);
 
     inline const static ConnectionId NullConnectionId;
+
     inline const static GroupId NullGroupId;
-    inline const static GroupRoutingId NullRoutingId;
+    inline const static GroupId DefaultGroupId{ "000000000000" };
+
+    inline const static RoutingId NullRoutingId;
+    inline const static RoutingId DefaultRoutingId{ "000000000000" };
 
     struct ConnectionGroupPair
     {
-      public:
-        ConnectionGroupPair(){};
-        ConnectionGroupPair(const ConnectionGroupPair &another)
-        {
-            *this = another;
-        }
-        ConnectionGroupPair &operator=(const ConnectionGroupPair &another)
-        {
-            connectionId = another.connectionId;
-            groupId = another.groupId;
-            return *this;
-        }
-        friend bool operator==(const ConnectionGroupPair &one, const ConnectionGroupPair &another)
-        {
-            return one.connectionId == another.connectionId && one.groupId == another.groupId;
-        }
-        friend bool operator!=(const ConnectionGroupPair &one, const ConnectionGroupPair &another)
-        {
-            return !(one == another);
-        }
-        ConnectionGroupPair(const ConnectionId &conn, const GroupId &group)
-        {
-            connectionId = conn;
-            groupId = group;
-        }
-
         ConnectionId connectionId = NullConnectionId;
         GroupId groupId = NullGroupId;
 
-        void clear()
-        {
-            connectionId = NullConnectionId;
-            groupId = NullGroupId;
-        }
-
-      public:
-        bool isEmpty() const
-        {
-            return groupId == NullGroupId || connectionId == NullConnectionId;
-        }
-        QJS_PLAIN_JSON(connectionId, groupId)
+        // clang-format off
+        ConnectionGroupPair(){};
+        ConnectionGroupPair(const ConnectionId &conn, const GroupId &group) { connectionId = conn, groupId = group; }
+        void clear() { connectionId = NullConnectionId, groupId = NullGroupId; }
+        bool isNull() const { return groupId == NullGroupId || connectionId == NullConnectionId; }
+        // clang-format on
     };
 
-    template<typename T>
-    inline size_t qHash(IDType<T> key)
+    struct ConfigObjectBase
     {
-        return ::qHash(key.toString());
-    }
-    inline size_t qHash(const ConnectionGroupPair &pair)
+        QString name;
+        QVariantMap attributes;
+        system_clock::time_point created = system_clock::now();
+        system_clock::time_point updated = system_clock::now();
+    };
+
+    struct ConnectionObject : public ConfigObjectBase
     {
-        return ::qHash(pair.connectionId.toString() + pair.groupId.toString());
-    }
+        system_clock::time_point last_connected;
+        int _group_ref = 0;
+    };
+
+    struct GroupObject : public ConfigObjectBase
+    {
+        QList<ConnectionId> connections;
+        RoutingId route_id;
+    };
+
+    struct RoutingObject : public ConfigObjectBase
+    {
+        int _group_ref = 0;
+    };
+
 } // namespace Qv2rayPlugin::connections
 
-Q_DECLARE_METATYPE(Qv2rayPlugin::connections::types::ConnectionGroupPair)
-Q_DECLARE_METATYPE(Qv2rayPlugin::connections::types::ConnectionId)
-Q_DECLARE_METATYPE(Qv2rayPlugin::connections::types::GroupId)
-Q_DECLARE_METATYPE(Qv2rayPlugin::connections::types::GroupRoutingId)
+template<typename T>
+inline size_t qHash(Qv2rayPlugin::connections::IDType<T> key)
+{
+    return ::qHash(key.toString());
+}
 
-using namespace Qv2rayPlugin::connections::types;
+Q_DECLARE_METATYPE(Qv2rayPlugin::connections::ConnectionId)
+Q_DECLARE_METATYPE(Qv2rayPlugin::connections::GroupId)
+Q_DECLARE_METATYPE(Qv2rayPlugin::connections::RoutingId)
+Q_DECLARE_METATYPE(Qv2rayPlugin::connections::ConnectionGroupPair)
