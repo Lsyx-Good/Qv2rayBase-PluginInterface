@@ -2,21 +2,19 @@
 
 #include "Connections/ConnectionsBaseTypes.hpp"
 
-#include <QJsonObject>
-#include <QMap>
 #include <optional>
 
-namespace Qv2rayPlugin::handlers::outbound
+namespace Qv2rayPlugin::Outbound
 {
-    enum class IOBOUND
+    enum IOBOUND_DATA_TYPE
     {
-        DISPLAYNAME = 0,
-        PROTOCOL = 1,
-        ADDRESS = 2,
-        PORT = 3,
-        SNI = 4
+        IO_DISPLAYNAME = 0,
+        IO_PROTOCOL = 1,
+        IO_ADDRESS = 2,
+        IO_PORT = 3,
+        IO_SNI = 4
     };
-    typedef QMap<IOBOUND, QVariant> PluginIOBoundData;
+    typedef QMap<IOBOUND_DATA_TYPE, QVariant> PluginIOBoundData;
 
     struct PluginOutboundDescriptor
     {
@@ -26,10 +24,10 @@ namespace Qv2rayPlugin::handlers::outbound
         QJsonObject StreamSettings;
     };
 
-    class PluginOutboundHandler
+    class IOutboundHandler
     {
       public:
-        explicit PluginOutboundHandler(){};
+        explicit IOutboundHandler(){};
         virtual std::optional<QString> Serialize(const PluginOutboundDescriptor &outbound) const = 0;
         virtual std::optional<PluginOutboundDescriptor> Deserialize(const QString &link) const = 0;
 
@@ -39,4 +37,4 @@ namespace Qv2rayPlugin::handlers::outbound
         virtual QList<QString> SupportedProtocols() const = 0;
         virtual QList<QString> SupportedLinkPrefixes() const = 0;
     };
-} // namespace Qv2rayPlugin::handlers::outbound
+} // namespace Qv2rayPlugin::Outbound

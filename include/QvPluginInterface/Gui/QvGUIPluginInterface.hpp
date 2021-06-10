@@ -9,7 +9,7 @@
 #include <QWidget>
 #include <utility>
 
-namespace Qv2rayPlugin
+namespace Qv2rayPlugin::Gui
 {
     struct ProtocolInfoObject
     {
@@ -76,13 +76,13 @@ namespace Qv2rayPlugin
         return { ProtocolInfoObject{ protocol, displayName }, new T() };
     }
 
-    class Qv2rayGUIInterface
+    class PluginGUIInterface
     {
       public:
         using typed_plugin_editor = QPair<ProtocolInfoObject, QvPluginEditor *>;
 
-        explicit Qv2rayGUIInterface() = default;
-        virtual ~Qv2rayGUIInterface() = default;
+        explicit PluginGUIInterface() = default;
+        virtual ~PluginGUIInterface() = default;
 
         virtual QIcon Icon() const = 0;
         virtual QList<QV2RAY_PLUGIN_GUI_COMPONENT_TYPE> GetComponents() const = 0;

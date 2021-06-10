@@ -3,7 +3,7 @@
 #include <QJsonObject>
 #include <QList>
 
-namespace Qv2rayPlugin::handlers::subscription
+namespace Qv2rayPlugin::Subscription
 {
     struct SubscriptionInfoObject
     {
@@ -30,12 +30,10 @@ namespace Qv2rayPlugin::handlers::subscription
         virtual SubscriptionDecodeResult DecodeData(const QByteArray &) const = 0;
     };
 
-    class SubscriptionInterface
+    class ISubscriptionHandler
     {
       public:
         virtual QList<SubscriptionInfoObject> SupportedSubscriptionTypes() const = 0;
         virtual std::shared_ptr<SubscriptionDecoder> GetSubscriptionDecoder(const QString &type) const = 0;
     };
-} // namespace Qv2rayPlugin::handlers::subscription
-
-using namespace Qv2rayPlugin::handlers::subscription;
+} // namespace Qv2rayPlugin::Subscription

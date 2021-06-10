@@ -21,6 +21,7 @@ target_include_directories(${PROJECT_NAME} INTERFACE
 set(HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Connections/ConnectionsBase.hpp
     ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Connections/ConnectionsBaseTypes.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Connections/ConnectionsSafeTypes.hpp
     ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Gui/QvGUIPluginInterface.hpp
     ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Handlers/EventHandler.hpp
     ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Handlers/KernelHandler.hpp

@@ -3,7 +3,7 @@
 #include <QUuid>
 #include <functional>
 
-namespace Qv2rayPlugin::handlers::kernel
+namespace Qv2rayPlugin::Kernel
 {
     enum KernelOptionFlags
     {
@@ -41,11 +41,9 @@ namespace Qv2rayPlugin::handlers::kernel
         std::function<std::unique_ptr<PluginKernel>(void)> Create;
     };
 
-    class PluginKernelInterface
+    class IKernelHandler
     {
       public:
         virtual QList<KernelInfo> GetKernels() const = 0;
     };
-} // namespace Qv2rayPlugin::handlers::kernel
-
-using namespace Qv2rayPlugin::handlers::kernel;
+} // namespace Qv2rayPlugin::Kernel

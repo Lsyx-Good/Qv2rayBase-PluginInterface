@@ -1,61 +1,15 @@
 #pragma once
 
+#include "ConnectionsSafeTypes.hpp"
+
 #include <QHash>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QString>
 #include <chrono>
 
-namespace Qv2rayPlugin::connections
+namespace Qv2rayPlugin::Connections::_base_types
 {
-    using namespace std::chrono;
-    template<typename, typename BASETYPE_T>
-    struct SafeJsonType : public BASETYPE_T
-    {
-        // clang-format off
-        template<class... Args> explicit SafeJsonType(Args... args) : BASETYPE_T(args...) {};
-        const BASETYPE_T &raw() const { return *this; }
-        // clang-format on
-    };
-
-    template<typename T>
-    struct IDType
-    {
-        // clang-format off
-        explicit IDType() : m_id("null"){};
-        explicit IDType(const QString &id) : m_id(id){};
-        bool operator==(const IDType<T> &rhs) const { return m_id == rhs.m_id; }
-        bool operator!=(const IDType<T> &rhs) const { return m_id != rhs.m_id; }
-        const QString toString() const { return m_id; }
-        bool isNull() const { return m_id == "null"; }
-        // clang-format on
-
-      private:
-        QString m_id;
-    };
-
-#define DeclareSafeJson(BASE, CLASS)                                                                                                                                     \
-    class __##CLASS##__;                                                                                                                                                 \
-    typedef SafeJsonType<__##CLASS##__, BASE> CLASS;
-
-#define DeclareSafeID(type)                                                                                                                                              \
-    class __##type;                                                                                                                                                      \
-    typedef IDType<__##type> type
-
-    DeclareSafeJson(QJsonObject, INBOUNDSETTING);
-    DeclareSafeJson(QJsonObject, OUTBOUNDSETTING);
-    DeclareSafeJson(QJsonObject, INBOUND);
-    DeclareSafeJson(QJsonObject, OUTBOUND);
-    DeclareSafeJson(QJsonObject, CONFIGROOT);
-    DeclareSafeJson(QJsonObject, ROUTING);
-    DeclareSafeJson(QJsonObject, ROUTERULE);
-    DeclareSafeJson(QJsonArray, OUTBOUNDS);
-    DeclareSafeJson(QJsonArray, INBOUNDS);
-
-    DeclareSafeID(GroupId);
-    DeclareSafeID(ConnectionId);
-    DeclareSafeID(RoutingId);
-
     inline const static ConnectionId NullConnectionId;
 
     inline const static GroupId NullGroupId;
@@ -72,6 +26,8 @@ namespace Qv2rayPlugin::connections
         // clang-format off
         ConnectionGroupPair(){};
         ConnectionGroupPair(const ConnectionId &conn, const GroupId &group) { connectionId = conn, groupId = group; }
+        bool operator==(const ConnectionGroupPair &rhs) const { return connectionId == rhs.connectionId && groupId == rhs.groupId; }
+        bool operator!=(const ConnectionGroupPair &rhs) const { return !(*this == rhs); }
         void clear() { connectionId = NullConnectionId, groupId = NullGroupId; }
         bool isNull() const { return groupId == NullGroupId || connectionId == NullConnectionId; }
         // clang-format on
@@ -94,7 +50,7 @@ namespace Qv2rayPlugin::connections
     struct GroupObject : public ConfigObjectBase
     {
         QList<ConnectionId> connections;
-        RoutingId route_id;
+        RoutingId route_id = NullRoutingId;
     };
 
     struct RoutingObject : public ConfigObjectBase
@@ -102,15 +58,10 @@ namespace Qv2rayPlugin::connections
         int _group_ref = 0;
     };
 
-} // namespace Qv2rayPlugin::connections
+} // namespace Qv2rayPlugin::Connections::_base_types
 
-template<typename T>
-inline size_t qHash(Qv2rayPlugin::connections::IDType<T> key)
-{
-    return ::qHash(key.toString());
-}
+// Expose all basic type decls to global namespace
 
-Q_DECLARE_METATYPE(Qv2rayPlugin::connections::ConnectionId)
-Q_DECLARE_METATYPE(Qv2rayPlugin::connections::GroupId)
-Q_DECLARE_METATYPE(Qv2rayPlugin::connections::RoutingId)
-Q_DECLARE_METATYPE(Qv2rayPlugin::connections::ConnectionGroupPair)
+using namespace Qv2rayPlugin::Connections::_base_types;
+
+Q_DECLARE_METATYPE(ConnectionGroupPair)

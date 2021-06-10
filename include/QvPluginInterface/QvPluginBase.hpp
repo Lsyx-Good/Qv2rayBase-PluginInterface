@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Connections/ConnectionsSafeTypes.hpp"
+
 #include <QJsonObject>
 #include <QObject>
 #include <QString>
@@ -73,7 +75,7 @@ namespace Qv2rayPlugin
         /// This value is used by Qv2ray to identify different plugins, including storing and
         /// restoring settings.
         ///
-        QString InternalID;
+        PluginId InternalID;
 
         ///
         /// \brief The descriptive string which will let users know what plugin does

@@ -7,19 +7,27 @@
 #include "Handlers/SubscriptionHandler.hpp"
 #include "QvPluginBase.hpp"
 
+#include <QDir>
+
 namespace Qv2rayBase::Plugins
 {
-    class PluginAPIHost;
     class PluginManagerCore;
 } // namespace Qv2rayBase::Plugins
 
+#define Qv2rayInterface_IID "com.github.Qv2ray.Qv2rayPluginInterface"
+
 namespace Qv2rayPlugin
 {
-    class Qv2rayGUIInterface;
+    using namespace Qv2rayPlugin::Outbound;
+    using namespace Qv2rayPlugin::Kernel;
+    using namespace Qv2rayPlugin::Event;
+    using namespace Qv2rayPlugin::Subscription;
+
+    class PluginGUIInterface;
     class Qv2rayInterface;
 
     ///
-    /// \brief PluginInstance always points to the
+    /// \brief PluginInstance always points to the instance of current plugin.
     ///
     inline Qv2rayInterface *PluginInstance;
 
@@ -28,15 +36,14 @@ namespace Qv2rayPlugin
     ///
     class Qv2rayInterface
     {
-        friend class PluginOutboundHandler;
-        friend class PluginKernel;
-        friend class PluginKernelInterface;
-        friend class PluginEventHandler;
-        friend class Qv2rayGUIInterface;
-        friend class SubscriptionDecoder;
-        friend class SubscriptionInterface;
-        friend class Qv2rayBase::Plugins::PluginAPIHost;
+        friend class Qv2rayPlugin::Outbound::IOutboundHandler;
+        friend class Qv2rayPlugin::Kernel::PluginKernel;
+        friend class Qv2rayPlugin::Kernel::IKernelHandler;
+        friend class Qv2rayPlugin::Event::IEventHandler;
+        friend class Qv2rayPlugin::Subscription::SubscriptionDecoder;
+        friend class Qv2rayPlugin::Subscription::ISubscriptionHandler;
         friend class Qv2rayBase::Plugins::PluginManagerCore;
+        friend class PluginGUIInterface;
 
       public:
         /// \internal
@@ -58,23 +65,23 @@ namespace Qv2rayPlugin
         ///
         virtual bool InitializePlugin() = 0;
 
-        virtual std::shared_ptr<PluginOutboundHandler> OutboundHandler() const final
+        virtual std::shared_ptr<Qv2rayPlugin::Outbound::IOutboundHandler> OutboundHandler() const final
         {
             return m_OutboundHandler;
         }
-        virtual std::shared_ptr<PluginEventHandler> EventHandler() const final
+        virtual std::shared_ptr<Qv2rayPlugin::Event::IEventHandler> EventHandler() const final
         {
             return m_EventHandler;
         }
-        virtual std::shared_ptr<PluginKernelInterface> KernelInterface() const final
+        virtual std::shared_ptr<Qv2rayPlugin::Kernel::IKernelHandler> KernelInterface() const final
         {
             return m_KernelInterface;
         }
-        virtual std::shared_ptr<SubscriptionInterface> SubscriptionAdapter() const final
+        virtual std::shared_ptr<Qv2rayPlugin::Subscription::ISubscriptionHandler> SubscriptionAdapter() const final
         {
             return m_SubscriptionInterface;
         }
-        virtual Qv2rayGUIInterface *GetGUIInterface() const final
+        virtual PluginGUIInterface *GetGUIInterface() const final
         {
             return m_GUIInterface;
         }
@@ -82,7 +89,7 @@ namespace Qv2rayPlugin
         {
             return m_Settings;
         }
-        virtual connections::IConnectionManager *ConnectionManager() const final
+        virtual Qv2rayPlugin::Connections::IProfileManager *ConnectionManager() const final
         {
             return m_ConnectionManager;
         }
@@ -111,22 +118,21 @@ namespace Qv2rayPlugin
         }
 
         QJsonObject m_Settings;
-        QString m_WorkingDirectory;
+        QDir m_WorkingDirectory;
 
-        std::shared_ptr<PluginOutboundHandler> m_OutboundHandler;
-        std::shared_ptr<PluginEventHandler> m_EventHandler;
-        std::shared_ptr<PluginKernelInterface> m_KernelInterface;
-        std::shared_ptr<SubscriptionInterface> m_SubscriptionInterface;
+        std::shared_ptr<Qv2rayPlugin::Outbound::IOutboundHandler> m_OutboundHandler;
+        std::shared_ptr<Qv2rayPlugin::Event::IEventHandler> m_EventHandler;
+        std::shared_ptr<Qv2rayPlugin::Kernel::IKernelHandler> m_KernelInterface;
+        std::shared_ptr<Qv2rayPlugin::Subscription::ISubscriptionHandler> m_SubscriptionInterface;
 
         // Not defined as a shared_ptr since not all plugins need QtGui
-        Qv2rayGUIInterface *m_GUIInterface;
+        PluginGUIInterface *m_GUIInterface;
 
       private:
-        connections::IConnectionManager *m_ConnectionManager;
+        Qv2rayPlugin::Connections::IProfileManager *m_ConnectionManager;
     };
 } // namespace Qv2rayPlugin
 
 QT_BEGIN_NAMESPACE
-#define Qv2rayInterface_IID "com.github.Qv2ray.Qv2rayPluginInterface"
 Q_DECLARE_INTERFACE(Qv2rayPlugin::Qv2rayInterface, Qv2rayInterface_IID)
 QT_END_NAMESPACE

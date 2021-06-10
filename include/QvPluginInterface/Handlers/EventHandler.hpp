@@ -1,7 +1,7 @@
 #pragma once
 #include <QMap>
 
-namespace Qv2rayPlugin::handlers::event
+namespace Qv2rayPlugin::Event
 {
     struct SystemProxy
     {
@@ -92,9 +92,7 @@ namespace Qv2rayPlugin::handlers::event
         };
     } // namespace _details
 
-    class PluginEventHandler : public _details::Qp<Connectivity::EventObject, SystemProxy::EventObject, ConnectionEntry::EventObject, ConnectionStats::EventObject>
+    class IEventHandler : public _details::Qp<Connectivity::EventObject, SystemProxy::EventObject, ConnectionEntry::EventObject, ConnectionStats::EventObject>
     {
     };
-} // namespace Qv2rayPlugin::handlers::event
-
-using namespace Qv2rayPlugin::handlers::event;
+} // namespace Qv2rayPlugin::Event
