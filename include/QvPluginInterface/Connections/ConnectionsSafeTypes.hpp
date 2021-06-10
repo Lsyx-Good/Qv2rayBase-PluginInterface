@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QHashFunctions>
 #include <QJsonObject>
 #include <QString>
 #include <chrono>
@@ -22,10 +23,10 @@ namespace Qv2rayPlugin::Connections::_base_types::safetype
         // clang-format off
         explicit IDType() : m_id("null"){};
         explicit IDType(const QString &id) : m_id(id){};
-        bool operator==(const IDType<T> &rhs) const { return m_id == rhs.m_id; }
-        bool operator!=(const IDType<T> &rhs) const { return m_id != rhs.m_id; }
-        const QString toString() const { return m_id; }
-        bool isNull() const { return m_id == "null"; }
+        inline bool operator==(const IDType<T> &rhs) const { return m_id == rhs.m_id; }
+        inline bool operator!=(const IDType<T> &rhs) const { return m_id != rhs.m_id; }
+        inline const QString toString() const { return m_id; }
+        inline bool isNull() const { return m_id == "null"; }
         // clang-format on
 
       private:
@@ -55,15 +56,16 @@ namespace Qv2rayPlugin::Connections::_base_types::safetype
     DeclareSafeID(ConnectionId);
     DeclareSafeID(RoutingId);
     DeclareSafeID(PluginId);
+
+    template<typename T>
+    inline size_t qHash(const Qv2rayPlugin::Connections::_base_types::safetype::IDType<T> &key) noexcept
+    {
+        return ::qHash(key.toString());
+    }
+
 } // namespace Qv2rayPlugin::Connections::_base_types::safetype
 
 using namespace Qv2rayPlugin::Connections::_base_types::safetype;
-
-template<typename T>
-inline size_t qHash(IDType<T> key)
-{
-    return ::qHash(key.toString());
-}
 
 Q_DECLARE_METATYPE(ConnectionId)
 Q_DECLARE_METATYPE(GroupId)
