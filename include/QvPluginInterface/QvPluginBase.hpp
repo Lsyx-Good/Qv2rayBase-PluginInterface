@@ -9,10 +9,9 @@
 #include <memory>
 #include <utility>
 
-constexpr inline auto QV2RAY_PLUGIN_INTERFACE_VERSION = 4;
-
 namespace Qv2rayPlugin
 {
+    constexpr inline auto QV2RAY_PLUGIN_INTERFACE_VERSION = 4;
     Q_NAMESPACE
 
     ///

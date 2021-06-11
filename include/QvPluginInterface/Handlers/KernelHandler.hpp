@@ -1,5 +1,8 @@
 #pragma once
+#include "../Connections/ConnectionsBaseTypes.hpp"
+
 #include <QObject>
+#include <QSet>
 #include <QUuid>
 #include <functional>
 
@@ -16,16 +19,24 @@ namespace Qv2rayPlugin::Kernel
         KERNEL_LISTEN_ADDRESS
     };
 
+    enum KernelCapabilityFlags
+    {
+        KERNELCAP_ROUTER = 0,
+        // KERNELCAP_INBOUNDS, // Unused
+        // KERNELCAP_OUTBOUNDS, // Unused
+    };
+
     class PluginKernel : public QObject
     {
         Q_OBJECT
       public:
         explicit PluginKernel() : QObject(){};
         ~PluginKernel() override = default;
-        virtual void SetConnectionSettings(const QMap<KernelOptionFlags, QVariant> &settings, const QJsonObject &connectionInfo) = 0;
+        virtual void SetConnectionSettings(const QMap<KernelOptionFlags, QVariant> &settings, const OutboundSettings &connectionInfo) = 0;
+        virtual void SetProfileContent(const ProfileContent &){};
         virtual bool Start() = 0;
         virtual bool Stop() = 0;
-        virtual QUuid KernelId() const = 0;
+        virtual KernelId GetKernelId() const = 0;
 
       signals:
         void OnCrashed(const QString &);
@@ -33,17 +44,18 @@ namespace Qv2rayPlugin::Kernel
         void OnStatsAvailable(quint64 upSpeed, quint64 downSpeed);
     };
 
-    struct KernelInfo
+    struct KernelFactory
     {
-        QUuid Id;
+        KernelId Id;
         QString Name;
-        QStringList SupportedProtocols;
+        QSet<QString> SupportedProtocols;
+        QFlags<KernelCapabilityFlags> Capabilities;
         std::function<std::unique_ptr<PluginKernel>(void)> Create;
     };
 
     class IKernelHandler
     {
       public:
-        virtual QList<KernelInfo> GetKernels() const = 0;
+        virtual QList<KernelFactory> PluginKernels() const = 0;
     };
 } // namespace Qv2rayPlugin::Kernel

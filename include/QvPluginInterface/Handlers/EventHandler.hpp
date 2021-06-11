@@ -1,4 +1,6 @@
 #pragma once
+#include "../Connections/ConnectionsBaseTypes.hpp"
+
 #include <QMap>
 
 namespace Qv2rayPlugin::Event
@@ -29,8 +31,8 @@ namespace Qv2rayPlugin::Event
         struct EventObject
         {
             QString DisplayName;
-            long UpLinkSpeed;
-            long DownLinkSpeed;
+            quint64 UpLinkSpeed;
+            quint64 DownLinkSpeed;
             quint64 UpLinkTotalData;
             quint64 DownLinkTotalData;
         };
@@ -49,9 +51,11 @@ namespace Qv2rayPlugin::Event
         {
             EventType Type;
             QString DisplayName;
-            QMap<QString, int> InboundPorts;
+            QMap<QString, PluginIOBoundData> InboundData;
+            QMap<QString, PluginIOBoundData> OutboundData;
             EventObject(){};
-            EventObject(const QString &name, const QMap<QString, int> &ports, const EventType &event) : Type(event), DisplayName(name), InboundPorts(ports){};
+            EventObject(const EventType &event, const QString &name, const QMap<QString, PluginIOBoundData> &in = {}, const QMap<QString, PluginIOBoundData> &out = {})
+                : Type(event), DisplayName(name), InboundData(in), OutboundData(out){};
         };
     };
 
