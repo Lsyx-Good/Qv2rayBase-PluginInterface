@@ -69,10 +69,12 @@ namespace Qv2rayPlugin::Connections::_base_types
     {
         struct ChainSource
         {
+            ~ChainSource() noexcept = default;
             // clang-format off
             enum { TAG, CONNECTIONID } source;
-            union { QString tag; ConnectionId id; } sourceId;
             // clang-format on
+            QString tag;
+            ConnectionId id;
         };
 
         int chaining_port;
@@ -113,3 +115,6 @@ Q_DECLARE_METATYPE(ConnectionGroupPair)
 Q_DECLARE_METATYPE(ConnectionObject)
 Q_DECLARE_METATYPE(GroupObject)
 Q_DECLARE_METATYPE(RoutingObject)
+Q_DECLARE_METATYPE(ChainObject)
+Q_DECLARE_METATYPE(OutboundObject)
+Q_DECLARE_METATYPE(ProfileContent)

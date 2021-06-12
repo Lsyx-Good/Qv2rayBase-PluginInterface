@@ -4,14 +4,14 @@ project(QvPluginInterface VERSION 4.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 COMPONENTS Core Network REQUIRED)
+find_package(Qt6 COMPONENTS Core REQUIRED)
 
 add_library(QvPluginInterface INTERFACE)
 add_library(Qv2ray::QvPluginInterface ALIAS QvPluginInterface)
 
 include(GNUInstallDirs)
 
-target_link_libraries(QvPluginInterface INTERFACE Qt::Core Qv2ray::QJsonStruct)
+target_link_libraries(QvPluginInterface INTERFACE Qt::Core)
 
 target_include_directories(${PROJECT_NAME} INTERFACE
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/QvPluginInterface>"
