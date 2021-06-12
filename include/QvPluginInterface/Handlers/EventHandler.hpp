@@ -30,11 +30,8 @@ namespace Qv2rayPlugin::Event
     {
         struct EventObject
         {
-            QString DisplayName;
-            quint64 UpLinkSpeed;
-            quint64 DownLinkSpeed;
-            quint64 UpLinkTotalData;
-            quint64 DownLinkTotalData;
+            ConnectionId Connection;
+            StatisticsObject Statistics;
         };
     };
 
@@ -50,12 +47,13 @@ namespace Qv2rayPlugin::Event
         struct EventObject
         {
             EventType Type;
-            QString DisplayName;
+            ConnectionGroupPair Connection;
             QMap<QString, PluginIOBoundData> InboundData;
             QMap<QString, PluginIOBoundData> OutboundData;
             EventObject(){};
-            EventObject(const EventType &event, const QString &name, const QMap<QString, PluginIOBoundData> &in = {}, const QMap<QString, PluginIOBoundData> &out = {})
-                : Type(event), DisplayName(name), InboundData(in), OutboundData(out){};
+            EventObject(const EventType &event, const ConnectionGroupPair &conn, const QMap<QString, PluginIOBoundData> &in = {},
+                        const QMap<QString, PluginIOBoundData> &out = {})
+                : Type(event), Connection(conn), InboundData(in), OutboundData(out){};
         };
     };
 
@@ -73,7 +71,8 @@ namespace Qv2rayPlugin::Event
         struct EventObject
         {
             EventType Type;
-            QString CurrentName;
+            GroupId Group;
+            ConnectionId Connection;
             QString OriginalName;
         };
     };

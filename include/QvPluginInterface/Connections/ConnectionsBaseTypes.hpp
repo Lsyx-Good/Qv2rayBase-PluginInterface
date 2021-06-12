@@ -36,6 +36,25 @@ namespace Qv2rayPlugin::Connections::_base_types
         // clang-format on
     };
 
+    struct StatisticsObject
+    {
+        enum StatisticsType
+        {
+            API_ALL_INBOUND = 0,
+            API_OUTBOUND_PROXY = 1,
+            API_OUTBOUND_DIRECT = 2,
+        };
+
+        // clang-format off
+        struct StatsEntry { quint64 up; quint64 down; };
+        StatsEntry &operator[](StatisticsType i) { while (entries.count() <= i) entries.append(StatsEntry{}); return entries[i]; }
+        void clear() { entries.clear(); }
+        // clang-format on
+
+      private:
+        QList<StatsEntry> entries;
+    };
+
     struct BaseTaggedObject
     {
         QString name;
@@ -53,8 +72,9 @@ namespace Qv2rayPlugin::Connections::_base_types
     struct ConnectionObject : public BaseConfigTaggedObject
     {
         system_clock::time_point last_connected;
+        StatisticsObject statistics;
         int _group_ref = 0;
-        QJS_FUNC_JSON(F(last_connected), B(BaseConfigTaggedObject))
+        QJS_FUNC_JSON(F(last_connected, statistics), B(BaseConfigTaggedObject))
     };
 
     struct SubscriptionConfigObject : public BaseTaggedObject
