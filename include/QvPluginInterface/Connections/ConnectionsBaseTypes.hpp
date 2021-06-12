@@ -88,7 +88,7 @@ namespace Qv2rayPlugin::Connections::_base_types
 
     struct ProfileContent : public BaseTaggedObject
     {
-        KernelId defaultKernel;
+        KernelId defaultKernel = NullKernelId;
         QList<InboundObject> inbounds;
         QList<OutboundObject> outbounds;
         RoutingObject routing;
