@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ConnectionsSafeTypes.hpp"
+#include "JsonConversion/JsonConversion.hpp"
 
 #include <QHash>
 #include <QJsonArray>
@@ -38,31 +39,55 @@ namespace Qv2rayPlugin::Connections::_base_types
     struct BaseTaggedObject
     {
         QString name;
-        QVariantMap options;
+        QJsonObject options;
+        QJS_FUNC_JSON(F(name, options))
     };
 
     struct BaseConfigTaggedObject : public BaseTaggedObject
     {
         system_clock::time_point created = system_clock::now();
         system_clock::time_point updated = system_clock::now();
+        QJS_FUNC_JSON(F(created, updated), B(BaseTaggedObject))
     };
 
     struct ConnectionObject : public BaseConfigTaggedObject
     {
         system_clock::time_point last_connected;
         int _group_ref = 0;
+        QJS_FUNC_JSON(F(last_connected), B(BaseConfigTaggedObject))
+    };
+
+    struct SubscriptionConfigObject : public BaseTaggedObject
+    {
+        enum SubscriptionFilterRelation
+        {
+            RELATION_AND = 0,
+            RELATION_OR = 1
+        };
+        bool isSubscription;
+        QString address;
+        QString type = "sip008";
+        float updateInterval = 10;
+        QList<QString> includeKeywords;
+        QList<QString> excludeKeywords;
+        SubscriptionFilterRelation includeRelation = RELATION_OR;
+        SubscriptionFilterRelation excludeRelation = RELATION_AND;
+        QJS_FUNC_JSON(F(isSubscription, address, type, updateInterval, includeKeywords, excludeKeywords, includeRelation, excludeRelation), B(BaseTaggedObject))
     };
 
     struct GroupObject : public BaseConfigTaggedObject
     {
         QList<ConnectionId> connections;
         RoutingId route_id = NullRoutingId;
+        SubscriptionConfigObject subscription_config;
+        QJS_FUNC_JSON(F(connections, route_id, subscription_config), B(BaseConfigTaggedObject))
     };
 
     struct RoutingObject : public BaseConfigTaggedObject
     {
         QList<RouteRule> rules;
         int _group_ref = 0;
+        QJS_FUNC_JSON(F(rules), B(BaseConfigTaggedObject))
     };
 
     struct ChainObject : public BaseTaggedObject
@@ -75,17 +100,20 @@ namespace Qv2rayPlugin::Connections::_base_types
             // clang-format on
             QString tag;
             ConnectionId id;
+            QJS_FUNC_JSON(F(source, tag, id))
         };
 
         int chaining_port;
         QList<ChainSource> chains;
+        QJS_FUNC_JSON(F(chains, chaining_port), B(BaseTaggedObject))
     };
 
     struct OutboundObject : public BaseTaggedObject
     {
         QString protocol;
-        KernelId kernel;
+        KernelId kernel = NullKernelId;
         OutboundSettings settings;
+        QJS_FUNC_JSON(F(protocol, kernel, settings), B(BaseTaggedObject))
     };
 
     struct ProfileContent : public BaseTaggedObject
@@ -94,6 +122,7 @@ namespace Qv2rayPlugin::Connections::_base_types
         QList<InboundObject> inbounds;
         QList<OutboundObject> outbounds;
         RoutingObject routing;
+        QJS_FUNC_JSON(F(defaultKernel, inbounds, outbounds, routing), B(BaseTaggedObject))
     };
 
     enum IOBOUND_DATA_TYPE

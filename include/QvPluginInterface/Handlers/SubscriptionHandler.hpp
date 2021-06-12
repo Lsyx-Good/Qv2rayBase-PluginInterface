@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Connections/ConnectionsBaseTypes.hpp"
+
 #include <QJsonObject>
 #include <QList>
 
@@ -24,7 +26,7 @@ namespace Qv2rayPlugin::Subscription
         struct SubscriptionDecodeResult
         {
             QList<QString> links;
-            QList<QPair<QString, QJsonObject>> connections;
+            QList<std::pair<QString, ProfileContent>> connections;
         };
         virtual ~SubscriptionDecoder(){};
         virtual SubscriptionDecodeResult DecodeData(const QByteArray &) const = 0;
