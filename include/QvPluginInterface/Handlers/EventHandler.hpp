@@ -1,5 +1,6 @@
 #pragma once
-#include "../Connections/ConnectionsBaseTypes.hpp"
+
+#include "Common/CommonTypes.hpp"
 
 #include <QMap>
 

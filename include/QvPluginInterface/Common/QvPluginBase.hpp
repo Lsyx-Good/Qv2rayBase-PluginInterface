@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Connections/ConnectionsSafeTypes.hpp"
+#include "Common/CommonTypes.hpp"
 
 #include <QJsonObject>
 #include <QObject>
@@ -24,6 +24,7 @@ namespace Qv2rayPlugin
         COMPONENT_KERNEL = 2,
         COMPONENT_OUTBOUND_HANDLER = 3,
         COMPONENT_SUBSCRIPTION_ADAPTER = 4,
+        COMPONENT_LATENCY_TEST_ENGINE = 5,
     };
     Q_ENUM_NS(QV2RAY_PLUGIN_COMPONENT_TYPE)
 

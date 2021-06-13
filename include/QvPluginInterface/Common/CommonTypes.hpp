@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ConnectionsSafeTypes.hpp"
+#include "CommonSafeType.hpp"
 #include "JsonConversion/JsonConversion.hpp"
 
 #include <QHash>
@@ -9,7 +9,7 @@
 #include <QString>
 #include <chrono>
 
-namespace Qv2rayPlugin::Connections::_base_types
+namespace Qv2rayPlugin::Common::_base_types
 {
     const static inline ConnectionId NullConnectionId;
 
@@ -155,10 +155,10 @@ namespace Qv2rayPlugin::Connections::_base_types
     };
 
     typedef QMap<IOBOUND_DATA_TYPE, QVariant> PluginIOBoundData;
-} // namespace Qv2rayPlugin::Connections::_base_types
+} // namespace Qv2rayPlugin::Common::_base_types
 
 // Expose all basic type decls to global namespace
-using namespace Qv2rayPlugin::Connections::_base_types;
+using namespace Qv2rayPlugin::Common::_base_types;
 
 Q_DECLARE_METATYPE(ConnectionGroupPair)
 Q_DECLARE_METATYPE(ConnectionObject)

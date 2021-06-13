@@ -1,5 +1,5 @@
 #pragma once
-#include "../Connections/ConnectionsBaseTypes.hpp"
+#include "Common/CommonTypes.hpp"
 
 #include <QObject>
 #include <QSet>
@@ -31,7 +31,7 @@ namespace Qv2rayPlugin::Kernel
         Q_OBJECT
       public:
         explicit PluginKernel() : QObject(){};
-        ~PluginKernel() override = default;
+        virtual ~PluginKernel() override = default;
         virtual void SetConnectionSettings(const QMap<KernelOptionFlags, QVariant> &settings, const OutboundSettings &connectionInfo) = 0;
         virtual void SetProfileContent(const ProfileContent &){};
         virtual bool Start() = 0;

@@ -1,15 +1,16 @@
 #pragma once
 
+#include "Common/QvPluginBase.hpp"
 #include "Connections/ConnectionsBase.hpp"
 #include "Handlers/EventHandler.hpp"
 #include "Handlers/KernelHandler.hpp"
+#include "Handlers/LatencyTestHandler.hpp"
 #include "Handlers/OutboundHandler.hpp"
 #include "Handlers/SubscriptionHandler.hpp"
-#include "QvPluginBase.hpp"
 
 #include <QDir>
 
-namespace Qv2rayBase::Plugins
+namespace Qv2rayBase::Plugin
 {
     class PluginManagerCore;
 } // namespace Qv2rayBase::Plugins
@@ -22,6 +23,7 @@ namespace Qv2rayPlugin
     using namespace Qv2rayPlugin::Kernel;
     using namespace Qv2rayPlugin::Event;
     using namespace Qv2rayPlugin::Subscription;
+    using namespace Qv2rayPlugin::Latency;
 
     class PluginGUIInterface;
     class Qv2rayInterface;
@@ -42,7 +44,8 @@ namespace Qv2rayPlugin
         friend class Qv2rayPlugin::Event::IEventHandler;
         friend class Qv2rayPlugin::Subscription::SubscriptionDecoder;
         friend class Qv2rayPlugin::Subscription::ISubscriptionHandler;
-        friend class Qv2rayBase::Plugins::PluginManagerCore;
+        friend class Qv2rayPlugin::Latency::ILatencyHandler;
+        friend class Qv2rayBase::Plugin::PluginManagerCore;
         friend class PluginGUIInterface;
 
       public:
@@ -80,6 +83,10 @@ namespace Qv2rayPlugin
         virtual std::shared_ptr<Qv2rayPlugin::Subscription::ISubscriptionHandler> SubscriptionAdapter() const final
         {
             return m_SubscriptionInterface;
+        }
+        virtual std::shared_ptr<Qv2rayPlugin::Latency::ILatencyHandler> LatencyTestHandler() const final
+        {
+            return m_LatencyTestHandler;
         }
         virtual PluginGUIInterface *GetGUIInterface() const final
         {
@@ -124,6 +131,7 @@ namespace Qv2rayPlugin
         std::shared_ptr<Qv2rayPlugin::Event::IEventHandler> m_EventHandler;
         std::shared_ptr<Qv2rayPlugin::Kernel::IKernelHandler> m_KernelInterface;
         std::shared_ptr<Qv2rayPlugin::Subscription::ISubscriptionHandler> m_SubscriptionInterface;
+        std::shared_ptr<Qv2rayPlugin::Latency::ILatencyHandler> m_LatencyTestHandler;
 
         // Not defined as a shared_ptr since not all plugins need QtGui
         PluginGUIInterface *m_GUIInterface;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ConnectionsBaseTypes.hpp"
+#include "Common/CommonTypes.hpp"
 
 namespace Qv2rayPlugin::Connections
 {

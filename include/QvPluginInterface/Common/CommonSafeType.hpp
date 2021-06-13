@@ -4,7 +4,7 @@
 #include <QJsonObject>
 #include <QString>
 
-namespace Qv2rayPlugin::Connections::_base_types::safetype
+namespace Qv2rayPlugin::Common::_base_types::safetype
 {
     using namespace std::chrono;
     template<typename, typename BASETYPE_T>
@@ -34,35 +34,35 @@ namespace Qv2rayPlugin::Connections::_base_types::safetype
     };
 
     template<typename T>
-    inline size_t qHash(const Qv2rayPlugin::Connections::_base_types::safetype::IDType<T> &key) noexcept
+    inline size_t qHash(const IDType<T> &key) noexcept
     {
         return ::qHash(key.toString());
     }
 
     template<typename T>
-    inline QDebug operator<<(QDebug debug, const Qv2rayPlugin::Connections::_base_types::safetype::IDType<T> &key)
+    inline QDebug operator<<(QDebug debug, const IDType<T> &key)
     {
         return debug << key.toString();
     }
 } // namespace Qv2rayPlugin::Connections::_base_types::safetype
 
-using namespace Qv2rayPlugin::Connections::_base_types::safetype;
+using namespace Qv2rayPlugin::Common::_base_types::safetype;
 
 #define DeclareSafeJson(BASE, CLASS)                                                                                                                                     \
-    namespace Qv2rayPlugin::Connections::_base_types::safetype                                                                                                           \
+    namespace Qv2rayPlugin::Common::_base_types::safetype                                                                                                                \
     {                                                                                                                                                                    \
         class __##CLASS##__;                                                                                                                                             \
-        typedef Qv2rayPlugin::Connections::_base_types::safetype::SafeJsonType<__##CLASS##__, BASE> CLASS;                                                               \
+        typedef Qv2rayPlugin::Common::_base_types::safetype::SafeJsonType<__##CLASS##__, BASE> CLASS;                                                                    \
     }                                                                                                                                                                    \
-    Q_DECLARE_METATYPE(Qv2rayPlugin::Connections::_base_types::safetype::CLASS)
+    Q_DECLARE_METATYPE(Qv2rayPlugin::Common::_base_types::safetype::CLASS)
 
 #define DeclareSafeID(type)                                                                                                                                              \
-    namespace Qv2rayPlugin::Connections::_base_types::safetype                                                                                                           \
+    namespace Qv2rayPlugin::Common::_base_types::safetype                                                                                                                \
     {                                                                                                                                                                    \
         class __##type;                                                                                                                                                  \
-        typedef Qv2rayPlugin::Connections::_base_types::safetype::IDType<__##type> type;                                                                                 \
+        typedef Qv2rayPlugin::Common::_base_types::safetype::IDType<__##type> type;                                                                                      \
     }                                                                                                                                                                    \
-    Q_DECLARE_METATYPE(Qv2rayPlugin::Connections::_base_types::safetype::type)
+    Q_DECLARE_METATYPE(Qv2rayPlugin::Common::_base_types::safetype::type)
 
 DeclareSafeJson(QJsonObject, InboundSettings);
 DeclareSafeJson(QJsonObject, OutboundSettings);
@@ -74,6 +74,7 @@ DeclareSafeID(ConnectionId);
 DeclareSafeID(RoutingId);
 DeclareSafeID(PluginId);
 DeclareSafeID(KernelId);
+DeclareSafeID(LatencyTestEngineId);
 
 #undef DeclareSafeJson
 #undef DeclareSafeID
