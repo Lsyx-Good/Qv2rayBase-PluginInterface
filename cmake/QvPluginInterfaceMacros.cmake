@@ -75,7 +75,7 @@ function(qv2ray_configure_plugin TARGET_NAME)
     endif()
 
     if((NOT DEFINED QVPLUGIN_INSTALL_PREFIX_LINUX) OR (QVPLUGIN_INSTALL_PREFIX_LINUX STREQUAL ""))
-        set(QVPLUGIN_INSTALL_PREFIX_LINUX "lib/qv2ray/plugins")
+        set(QVPLUGIN_INSTALL_PREFIX_LINUX "lib/Qv2rayBase/plugins")
     endif()
 
     if((NOT DEFINED QVPLUGIN_INSTALL_PREFIX_WINDOWS) OR (QVPLUGIN_INSTALL_PREFIX_WINDOWS STREQUAL ""))
@@ -83,7 +83,7 @@ function(qv2ray_configure_plugin TARGET_NAME)
     endif()
 
     if((NOT DEFINED QVPLUGIN_INSTALL_PREFIX_MACOS) OR (QVPLUGIN_INSTALL_PREFIX_MACOS STREQUAL ""))
-        set(QVPLUGIN_INSTALL_PREFIX_MACOS "qv2ray.app/Contents/Resources/plugins")
+        set(QVPLUGIN_INSTALL_PREFIX_MACOS "$<TARGET_PROPERTY:${TARGET_NAME},BINARY_DIR>/../Resources/plugins")
     endif()
 
     if(DEFINED QVPLUGIN_INSTALL_PREFIX_ANDROID)
@@ -92,7 +92,7 @@ function(qv2ray_configure_plugin TARGET_NAME)
     # ====================================== END PARSING ARGUMENTS
 
     target_sources(${TARGET_NAME} PRIVATE ${QVPLUGIN_INTERFACE_HEADERS})
-    target_link_libraries(${TARGET_NAME} PRIVATE Qt::Core Qv2ray::QJsonStruct)
+    target_link_libraries(${TARGET_NAME} PRIVATE Qt::Core)
     target_include_directories(${TARGET_NAME} PRIVATE ${QVPLUGIN_INTERFACE_INCLUDE_PATH})
 
     if(QVPLUGIN_HTTP_TO_SOCKS)
@@ -120,7 +120,7 @@ function(qv2ray_configure_plugin TARGET_NAME)
         set_target_properties(${TARGET_NAME} PROPERTIES AUTOUIC ON)
     endif()
 
-    if(APPLE AND NOT QVPLUGIN_MACOS_ADD_RPATH)
+    if(APPLE AND NOT QVPLUGIN_NO_RPATH)
         add_custom_command(TARGET ${TARGET_NAME}
             POST_BUILD
             COMMAND

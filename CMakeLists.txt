@@ -71,3 +71,5 @@ export(EXPORT QvPluginInterfaceTargets
     FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/QvPluginInterfaceTargets.cmake"
     NAMESPACE Qv2ray::
 )
+
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/QvPluginInterfaceMacros.cmake)
