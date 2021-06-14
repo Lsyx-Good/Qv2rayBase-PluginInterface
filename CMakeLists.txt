@@ -44,7 +44,7 @@ configure_package_config_file(${CMAKE_CURRENT_LIST_DIR}/cmake/QvPluginInterfaceC
 
 write_basic_package_version_file(
   ${CMAKE_CURRENT_BINARY_DIR}/QvPluginInterfaceConfigVersion.cmake
-  COMPATIBILITY ExactVersion)
+  COMPATIBILITY SameMajorVersion)
 
 install(TARGETS QvPluginInterface
     EXPORT QvPluginInterfaceTargets
