@@ -44,7 +44,7 @@ namespace Qv2rayPlugin::Common::_base_types::safetype
     {
         return debug << key.toString();
     }
-} // namespace Qv2rayPlugin::Connections::_base_types::safetype
+} // namespace Qv2rayPlugin::Common::_base_types::safetype
 
 using namespace Qv2rayPlugin::Common::_base_types::safetype;
 

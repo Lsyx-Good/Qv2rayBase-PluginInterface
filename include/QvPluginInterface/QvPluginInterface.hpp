@@ -13,7 +13,7 @@
 namespace Qv2rayBase::Plugin
 {
     class PluginManagerCore;
-} // namespace Qv2rayBase::Plugins
+} // namespace Qv2rayBase::Plugin
 
 #define Qv2rayInterface_IID "com.github.Qv2ray.Qv2rayPluginInterface"
 

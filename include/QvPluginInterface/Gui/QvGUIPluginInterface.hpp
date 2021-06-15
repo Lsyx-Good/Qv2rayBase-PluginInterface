@@ -110,4 +110,4 @@ namespace Qv2rayPlugin::Gui
         virtual std::unique_ptr<PluginMainWindowWidget> createMainWindowWidget() const = 0;
     };
 
-} // namespace Qv2rayPlugin
+} // namespace Qv2rayPlugin::Gui
