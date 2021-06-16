@@ -104,14 +104,14 @@ namespace Qv2rayPlugin
         ///
         /// \brief A signal that'll be connected to Qv2ray to provide logging function
         ///
-        virtual void PluginLog(QString) const = 0;
+        virtual void PluginLog(QString) = 0;
 
         ///
         /// \brief PluginErrorMessageBox shows an error messagebox to the user with title and message.
         /// \param title The title of that messagebox
         /// \param message The content of message
         ///
-        virtual void PluginErrorMessageBox(QString title, QString message) const = 0;
+        virtual void PluginErrorMessageBox(QString title, QString message) = 0;
 
         ///
         /// \brief SettingsUpdated will be called by Qv2ray once the plugin setting is updated.

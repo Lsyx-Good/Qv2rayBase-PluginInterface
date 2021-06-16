@@ -94,13 +94,13 @@ namespace Qv2rayPlugin
 
         QvPluginMetadata(QString name,                                                   //
                          QString author,                                                 //
-                         QString internalName,                                           //
+                         PluginId id,                                                    //
                          QString description,                                            //
                          QString url,                                                    //
                          const QList<QV2RAY_PLUGIN_COMPONENT_TYPE> &supportedComponents) //
             : Name(std::move(name)),                                                     //
               Author(std::move(author)),                                                 //
-              InternalID(std::move(internalName)),                                       //
+              InternalID(std::move(id)),                                                 //
               Description(std::move(description)),                                       //
               Url(std::move(url)),                                                       //
               Components(supportedComponents){};                                         //
