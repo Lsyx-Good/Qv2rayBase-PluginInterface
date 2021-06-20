@@ -8,25 +8,16 @@
 #include <QVariant>
 #include <type_traits>
 
-// clang-format off
-template<typename, typename = void> struct has_toJson : public std::false_type {};
-template<typename C> struct has_toJson<C, typename std::enable_if_t<std::is_convertible_v<decltype(std::declval<C>().toJson()), QJsonObject>>> : public std::true_type {};
-
-template<typename, typename = void> struct has_loadJson : public std::false_type {};
-template<typename C> struct has_loadJson<C, typename std::enable_if_t<std::is_void_v<decltype(std::declval<C>().loadJson(std::declval<const QJsonObject&>()))>>> : public std::true_type {};
-
-template<typename C> struct has_JsonOperators { constexpr static auto value = has_toJson<C>::value && has_loadJson<C>::value; };
-// clang-format on
+template<typename T>
+struct Bindable;
 
 #define __FROMJSON_B(name) name::loadJson(json);
-#define __FROMJSON_F(name) JsonStructHelper::Deserialize(this->name, json.toObject()[#name]);
-#define __FROMJSON_P(name) JsonStructHelper::Deserialize(this->name, json.toObject()[#name]);
+#define __FROMJSON_F(name) ::JsonStructHelper::Deserialize(this->name, json.toObject()[#name]);
+#define __FROMJSON_P(name) ::JsonStructHelper::Deserialize(this->name, json.toObject()[#name]);
 
-#define __TOJSON_P(name)                                                                                                                                                 \
-    if (this->name.isRequired || !this->name.isDefault())                                                                                                                \
-        json.insert(#name, JsonStructHelper::Serialize(this->name));
-#define __TOJSON_F(name) json.insert(#name, JsonStructHelper::Serialize(this->name));
-#define __TOJSON_B(base) JsonStructHelper::MergeJson(json, base::toJson());
+#define __TOJSON_P(name) json.insert(#name, ::JsonStructHelper::Serialize(this->name));
+#define __TOJSON_F(name) json.insert(#name, ::JsonStructHelper::Serialize(this->name));
+#define __TOJSON_B(base) ::JsonStructHelper::MergeJson(json, base::toJson());
 
 // ============================================================================================
 // Load JSON Wrapper
@@ -59,21 +50,40 @@ template<typename C> struct has_JsonOperators { constexpr static auto value = ha
 template<typename T>
 struct QJsonStructSerializer
 {
-    enum
-    {
-        Defined = 0
-    };
     static void Deserialize(T &t, const QJsonValue &d);
     static QJsonValue Serialize(const T &t);
 };
 
-class JsonStructHelper
+struct JsonStructHelper
 {
-  public:
+
+    // clang-format off
+    template<typename, typename = void> struct has_toJson : public std::false_type {};
+    template<typename C> struct has_toJson<C, typename std::enable_if_t<std::is_convertible_v<decltype(std::declval<C>().toJson()), QJsonObject>>> : public std::true_type {};
+    
+    template<typename, typename = void> struct has_loadJson : public std::false_type {};
+    template<typename C> struct has_loadJson<C, typename std::enable_if_t<std::is_void_v<decltype(std::declval<C>().loadJson(std::declval<const QJsonValue&>()))>>> : public std::true_type {};
+    
+    template <class T, std::size_t = sizeof(T)>
+    static std::true_type is_complete_impl(T *);
+    static std::false_type is_complete_impl(...);
+    template <class T> using is_complete = decltype(is_complete_impl(std::declval<T*>()));
+    
+    template <class, template <class> class>
+    struct is_instance : public std::false_type {};
+    
+    template <class T, template <class> class U>
+    struct is_instance<U<T>, U> : public std::true_type {};
+    
+    template <class T>
+    using is_bindable_template = is_instance<T, Bindable>;
+
+    // clang-format on
+
     static void MergeJson(QJsonObject &mergeTo, const QJsonObject &mergeIn)
     {
-        for (const auto &key : mergeIn.keys())
-            mergeTo[key] = mergeIn.value(key);
+        for (auto it = mergeIn.constBegin(); it != mergeIn.constEnd(); it++)
+            mergeTo[it.key()] = it.value();
     }
 
     // =========================== Deserialize ===========================
@@ -126,16 +136,19 @@ class JsonStructHelper
     template<typename T>
     static void Deserialize(T &t, const QJsonValue &d)
     {
-        if constexpr (std::is_enum_v<T>)
+        using _T = std::remove_cvref_t<T>;
+        if constexpr (std::is_enum_v<_T>)
             t = (T) d.toInt();
-        else if constexpr (std::is_same_v<T, QJsonObject>)
+        else if constexpr (std::is_same_v<_T, QJsonObject>)
             t = d.toObject();
-        else if constexpr (std::is_same_v<T, QJsonArray>)
+        else if constexpr (std::is_same_v<_T, QJsonArray>)
             t = d.toArray();
-        else if constexpr (::QJsonStructSerializer<T>::Defined == 1)
-            ::QJsonStructSerializer<T>::Deserialize(t, d);
-        else if constexpr (has_JsonOperators<T>::value)
+        else if constexpr (is_bindable_template<_T>::value)
+            Deserialize(*t, d);
+        else if constexpr (has_loadJson<_T>::value)
             t.loadJson(d);
+        else if constexpr (is_complete<QJsonStructSerializer<_T>>::value)
+            QJsonStructSerializer<_T>::Deserialize(t, d);
         else
             assert(false);
     }
@@ -143,7 +156,7 @@ class JsonStructHelper
     // =========================== Serialize ===========================
 
     // clang-format off
-#define STORE_SIMPLE_FUNC(type) static QJsonValue Serialize(const type &t) { return { t }; }
+#define STORE_SIMPLE_FUNC(type) static QJsonValue Serialize(const type &t) { return QJsonValue{ t }; }
     STORE_SIMPLE_FUNC(int);
     STORE_SIMPLE_FUNC(bool);
     STORE_SIMPLE_FUNC(QJsonArray);
@@ -192,17 +205,24 @@ class JsonStructHelper
     template<typename T>
     static QJsonValue Serialize(const T &t)
     {
+        using _T = std::remove_cvref_t<T>;
         if constexpr (std::is_enum_v<T>)
             return (int) t;
-        else if constexpr (std::is_same_v<T, QJsonObject>)
+        else if constexpr (std::is_same_v<_T, QJsonObject>)
             return t;
-        else if constexpr (std::is_same_v<T, QJsonArray>)
+        else if constexpr (std::is_same_v<_T, QJsonArray>)
             return t;
-        else if constexpr (::QJsonStructSerializer<T>::Defined == 1)
-            return ::QJsonStructSerializer<T>::Serialize(t);
-        else if constexpr (has_JsonOperators<T>::value)
+        else if constexpr (std::is_convertible_v<_T, QJsonObject>)
+            return (QJsonObject) t;
+        else if constexpr (std::is_convertible_v<_T, QJsonValue>)
+            return (QJsonValue) t;
+        else if constexpr (is_bindable_template<_T>::value)
+            return Serialize(*t);
+        else if constexpr (has_toJson<_T>::value)
             return t.toJson();
-        else
-            assert(false);
+        else if constexpr (is_complete<QJsonStructSerializer<_T>>::value)
+            return ::QJsonStructSerializer<_T>::Serialize(t);
+        assert(false);
+        return {};
     }
 };

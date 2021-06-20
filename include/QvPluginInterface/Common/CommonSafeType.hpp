@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Utils/BindableProps.hpp"
+#include "Utils/JsonConversion.hpp"
 
 #include <QHashFunctions>
 #include <QJsonObject>
@@ -15,14 +16,15 @@ namespace Qv2rayPlugin::Common::_base_types::safetype
         // clang-format off
         template<class... Args> explicit SafeJsonType(Args... args) : QJsonObject(args...) {};
         const QJsonObject &raw() const { return *this; }
+        QJsonObject toJson() const { return *this; }
+        void loadJson(const QJsonValue &d) { *this = std::remove_cvref_t<decltype (*this)> { d.toObject() }; }
         template<typename TTarget> TTarget CopyAs() const { return TTarget(raw()); }
         // clang-format on
         template<typename TTarget>
         TTarget ForceCopyAs() const
         {
-            static_assert(has_JsonOperators<TTarget>::value, "TTarget must have QJS_FUNC_JSON or have JSON operators.");
             TTarget t;
-            t.loadJson(raw());
+            JsonStructHelper::Deserialize(t, raw());
             return t;
         }
     };
@@ -38,6 +40,8 @@ namespace Qv2rayPlugin::Common::_base_types::safetype
         inline bool operator!=(const IDType<T> &rhs) const { return m_id != rhs.m_id; }
         inline const QString toString() const { return m_id; }
         inline bool isNull() const { return m_id == "null"; }
+        inline QJsonObject toJson() const { return QJsonValue(m_id).toObject(); }
+        inline void loadJson(const QJsonValue &d) { m_id = d.toString(); }
         // clang-format on
 
       private:

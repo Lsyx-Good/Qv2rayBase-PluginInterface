@@ -1,7 +1,5 @@
 #pragma once
 
-#include "JsonConversion.hpp"
-
 #include <QJsonValue>
 #include <QObject>
 #include <QVariant>
@@ -21,10 +19,8 @@ struct Bindable : public INotifiable
 {
   public:
     typedef T value_type;
-    const bool isRequired = false;
-    Bindable(const Bindable<T> &&another) : value(another.defaultValue), defaultValue(another.defaultValue), isRequired(another.isRequired){};
-    Bindable(const Bindable<T> &another) : value(another.defaultValue), defaultValue(defaultValue), isRequired(isRequired){};
-    Bindable(T def = T{}, bool required = false) : value(def), defaultValue(def), isRequired(required){};
+    Bindable(const T &def = T{}) : value(def){};
+    Bindable(const Bindable<T> &another) : value(another.value){};
 
     // clang-format off
     const T* operator->() const { return &value; }
@@ -52,9 +48,6 @@ struct Bindable : public INotifiable
     template<typename V> T operator&=(const V &v) { value &= v; return value; }
     template<typename V> T operator%=(const V &v) { value %= v; return value; }
     template<typename V> T operator|=(const V &v) { value |= v; return value; }
-
-    QJsonValue toJson() const { return JsonStructHelper::Serialize(value); }
-    void loadJson(const QJsonValue &val) { JsonStructHelper::Deserialize(value, val); }
     // clang-format on
 
     // clang-format off
@@ -63,11 +56,6 @@ struct Bindable : public INotifiable
     bool operator==(const Bindable<T>& left) const { return   left.value == value ; }
     bool operator!=(const Bindable<T>& left) const { return !(left.value == value); }
     // clang-format on
-
-    bool isDefault() const
-    {
-        return defaultValue == value;
-    }
 
   public:
     void EmitNotify()
@@ -106,7 +94,8 @@ struct Bindable : public INotifiable
     inline void WriteBind(TTarget *target, const char *target_prop)
     {
         static_assert(std::is_base_of_v<QObject, TTarget>, "Wrong Usage: Target must be a QObject");
-        Q_ASSERT_X(qMetaTypeId<T>() == ((QObject *) target)->property(target_prop).metaType().id(), "WriteBind", "ID doesn't match.");
+        const auto conv = QMetaType::canConvert(QMetaType(qMetaTypeId<T>()), ((QObject *) target)->property(target_prop).metaType());
+        Q_ASSERT_X(conv, "WriteBind", "ID doesn't match.");
 
         // Firstly, sync target properties.
         ((QObject *) target)->setProperty(target_prop, value);
@@ -126,7 +115,8 @@ struct Bindable : public INotifiable
     inline void ReadBind(const TTarget *target, const char *target_prop, Func trigger_signal)
     {
         static_assert(std::is_base_of_v<QObject, TTarget>, "Wrong Usage: Target must be a QObject");
-        Q_ASSERT_X(qMetaTypeId<T>() == ((QObject *) target)->property(target_prop).metaType().id(), "ReadBind", "ID doesn't match.");
+        const auto conv = QMetaType::canConvert(((QObject *) target)->property(target_prop).metaType(), QMetaType(qMetaTypeId<T>()));
+        Q_ASSERT_X(conv, "ReadBind", "ID doesn't match.");
 
         QObject::connect(target, trigger_signal,
                          [this, target, target_prop]()
@@ -153,5 +143,4 @@ struct Bindable : public INotifiable
         return value;
     }
     T value;
-    const T defaultValue;
 };

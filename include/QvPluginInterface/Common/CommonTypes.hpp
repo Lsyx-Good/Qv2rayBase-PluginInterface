@@ -9,6 +9,19 @@
 #include <QString>
 #include <chrono>
 
+template<>
+struct QJsonStructSerializer<std::chrono::system_clock::time_point>
+{
+    static void Deserialize(std::chrono::system_clock::time_point &t, const QJsonValue &d)
+    {
+        t = std::chrono::system_clock::from_time_t(d.toVariant().toLongLong());
+    }
+    static QJsonValue Serialize(const std::chrono::system_clock::time_point &t)
+    {
+        return QJsonValue::fromVariant(QVariant::fromValue<qlonglong>(std::chrono::system_clock::to_time_t(t)));
+    }
+};
+
 namespace Qv2rayPlugin::Common::_base_types
 {
     constexpr unsigned int LATENCY_TEST_VALUE_ERROR = 99999;
@@ -37,6 +50,7 @@ namespace Qv2rayPlugin::Common::_base_types
         inline void clear() { connectionId = NullConnectionId, groupId = NullGroupId; }
         inline bool isNull() const { return groupId == NullGroupId || connectionId == NullConnectionId; }
         // clang-format on
+        QJS_FUNC_JSON(F(connectionId, groupId))
     };
 
     struct StatisticsObject
@@ -49,9 +63,11 @@ namespace Qv2rayPlugin::Common::_base_types
         };
 
         // clang-format off
-        struct StatsEntry { quint64 up; quint64 down; };
+        struct StatsEntry { quint64 up; quint64 down; QJS_FUNC_JSON(F(up, down)) };
         StatsEntry &operator[](StatisticsType i) { while (entries.count() <= i) entries.append(StatsEntry{}); return entries[i]; }
         void clear() { entries.clear(); }
+        QJsonValue toJson() const { return JsonStructHelper::Serialize(entries); }
+        void loadJson(const QJsonObject &d) { JsonStructHelper::Deserialize(entries, d); }
         // clang-format on
 
       private:
@@ -114,6 +130,7 @@ namespace Qv2rayPlugin::Common::_base_types
         {
             return QString::number(from) + "-" + QString::number(to);
         }
+        QJS_FUNC_JSON(F(from, to))
     };
 
     struct RuleObject : public BaseTaggedObject
@@ -132,11 +149,12 @@ namespace Qv2rayPlugin::Common::_base_types
 
         QStringList networks;
         QStringList protocols;
-        QString attrs;
 
         QStringList processes;
 
         RuleExtraSettings extraSettings = RuleExtraSettings{};
+        QJS_FUNC_JSON(F(enabled, inboundTags, outboundTag, sourceAddresses, targetDomains, targetIPs, sourcePort, targetPort, networks, protocols, processes,
+                        extraSettings))
     };
 
     struct RoutingObject : public BaseConfigTaggedObject
@@ -180,6 +198,7 @@ namespace Qv2rayPlugin::Common::_base_types
     {
         QString selectorType;
         BalancerSelectorSettings selectorSettings = BalancerSelectorSettings{};
+        QJS_FUNC_JSON(F(selectorType, selectorSettings))
     };
 
     struct ChainSettings : public BaseTaggedObject
@@ -208,7 +227,7 @@ namespace Qv2rayPlugin::Common::_base_types
         BalancerSettings balancerSettings;
         ChainSettings chainSettings;
 
-        QJS_FUNC_JSON(F(protocol, objectType, kernel, outboundSettings), B(BaseTaggedObject))
+        QJS_FUNC_JSON(F(protocol, objectType, kernel, externalId, outboundSettings, balancerSettings, chainSettings), B(BaseTaggedObject))
     };
 
     struct ProfileContent : public BaseTaggedObject
