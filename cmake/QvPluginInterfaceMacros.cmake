@@ -7,6 +7,13 @@ function(qv2ray_add_plugin_moc_sources TARGET)
     target_sources(${TARGET} PRIVATE ${QvPluginInterface_Prefix}/Utils/BindableProps.hpp)
 endfunction()
 
+function(qv2ray_add_plugin_gui_sources TARGET)
+    if(NOT QvPluginInterface_Prefix)
+        get_filename_component(QvPluginInterface_Prefix "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../include/QvPluginInterface/" ABSOLUTE)
+    endif()
+    target_sources(${TARGET} PRIVATE ${QvPluginInterface_Prefix}/Gui/QvGUIPluginInterface.hpp)
+endfunction()
+
 function(qv2ray_configure_plugin TARGET_NAME)
     set(options GUI Quick Widgets NO_INSTALL NO_RPATH HTTP_TO_SOCKS)
     set(oneValueArgs
@@ -86,6 +93,7 @@ function(qv2ray_configure_plugin TARGET_NAME)
         find_package(Qt6 COMPONENTS Gui REQUIRED)
         target_link_libraries(${TARGET_NAME} PRIVATE Qt::Gui)
         target_include_directories(${TARGET_NAME} PRIVATE "${QvPluginInterface_Prefix}/Gui")
+        qv2ray_add_plugin_gui_sources(${TARGET_NAME})
     endif()
 
     if(QVPLUGIN_Quick)
