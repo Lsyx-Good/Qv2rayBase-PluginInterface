@@ -11,6 +11,13 @@
 template<typename T>
 struct Bindable;
 
+#define _QJS_FUNC_COMPAREImpl(x) (this->x == another.x)
+#define QJS_FUNC_COMPARE(CLASS, ...)                                                                                                                                     \
+    bool operator==(const CLASS &another) const                                                                                                                          \
+    {                                                                                                                                                                    \
+        return FOR_EACH_DELIM(_QJS_FUNC_COMPAREImpl, &&, __VA_ARGS__);                                                                                                   \
+    }
+
 #define __FROMJSON_B(name) name::loadJson(json);
 #define __FROMJSON_F(name) ::JsonStructHelper::Deserialize(this->name, json.toObject()[#name]);
 #define __FROMJSON_P(name) ::JsonStructHelper::Deserialize(this->name, json.toObject()[#name]);
