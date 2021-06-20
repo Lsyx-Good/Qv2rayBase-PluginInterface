@@ -76,6 +76,12 @@ function(qv2ray_configure_plugin TARGET_NAME)
 
     qv2ray_add_plugin_moc_sources(${TARGET_NAME})
 
+    if(CMAKE_CXX_COMPILER_ID EQUAL Clang OR CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+        if(UNIX AND NOT APPLE)
+            target_link_libraries(${TARGET_NAME} PRIVATE "-Wl,-z,defs")
+        endif()
+    endif()
+
     find_package(Qt6 COMPONENTS Core REQUIRED)
     target_link_libraries(${TARGET_NAME} PRIVATE Qt::Core Qv2ray::QvPluginInterface)
 

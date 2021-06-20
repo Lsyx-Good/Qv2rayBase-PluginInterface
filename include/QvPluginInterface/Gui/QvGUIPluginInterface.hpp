@@ -19,10 +19,9 @@ namespace Qv2rayPlugin::Gui
 
     class PluginSettingsWidget : public QWidget
     {
-        Q_OBJECT
       public:
         explicit PluginSettingsWidget(QWidget *parent) : QWidget(parent){};
-        ~PluginSettingsWidget() override = default;
+        virtual ~PluginSettingsWidget() override = default;
 
         virtual void SetSettings(const QJsonObject &) = 0;
         virtual QJsonObject GetSettings() = 0;
@@ -30,10 +29,9 @@ namespace Qv2rayPlugin::Gui
 
     class PluginMainWindowWidget : public QDialog
     {
-        Q_OBJECT
       public:
         explicit PluginMainWindowWidget(QWidget *parent) : QDialog(parent){};
-        ~PluginMainWindowWidget() override = default;
+        virtual ~PluginMainWindowWidget() override = default;
     };
 
 #define PLUGIN_EDITOR_LOADING_SCOPE(t)                                                                                                                                   \
@@ -54,7 +52,6 @@ namespace Qv2rayPlugin::Gui
 
     class QvPluginEditor : public QWidget
     {
-        Q_OBJECT
       public:
         explicit QvPluginEditor(QWidget *parent = nullptr) : QWidget(parent){};
         virtual ~QvPluginEditor() = default;

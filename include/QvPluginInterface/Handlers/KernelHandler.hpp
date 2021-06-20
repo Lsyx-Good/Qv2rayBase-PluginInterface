@@ -28,10 +28,9 @@ namespace Qv2rayPlugin::Kernel
 
     class PluginKernel : public QObject
     {
-        Q_OBJECT
       public:
         explicit PluginKernel() : QObject(){};
-        virtual ~PluginKernel() override = default;
+        virtual ~PluginKernel() = default;
         virtual void SetConnectionSettings(const QMap<KernelOptionFlags, QVariant> &settings, const IOProtocolStreamSettings &connectionInfo) = 0;
         virtual void SetProfileContent(const ProfileContent &){};
         virtual bool Start() = 0;
