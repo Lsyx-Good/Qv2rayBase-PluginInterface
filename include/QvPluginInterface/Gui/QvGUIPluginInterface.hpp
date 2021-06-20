@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../QvPluginBase.hpp"
+#include "Common/QvPluginBase.hpp"
 
 #include <QDialog>
 #include <QJsonObject>
@@ -62,11 +62,11 @@ namespace Qv2rayPlugin::Gui
         virtual void SetHostAddress(const QString &address, int port) = 0;
         virtual QPair<QString, int> GetHostAddress() const = 0;
 
-        virtual void SetContent(const QJsonObject &) = 0;
-        virtual const QJsonObject GetContent() const = 0;
+        virtual void SetContent(const IOProtocolSettings &) = 0;
+        virtual const IOProtocolSettings GetContent() const = 0;
 
       protected:
-        QJsonObject content;
+        IOProtocolSettings content;
         bool isLoading = false;
     };
 
@@ -85,7 +85,7 @@ namespace Qv2rayPlugin::Gui
         virtual ~PluginGUIInterface() = default;
 
         virtual QIcon Icon() const = 0;
-        virtual QList<QV2RAY_PLUGIN_GUI_COMPONENT_TYPE> GetComponents() const = 0;
+        virtual QList<Qv2rayPlugin::PLUGIN_GUI_COMPONENT_TYPE> GetComponents() const = 0;
         virtual std::unique_ptr<PluginSettingsWidget> GetSettingsWidget() const final
         {
             return createSettingsWidgets();

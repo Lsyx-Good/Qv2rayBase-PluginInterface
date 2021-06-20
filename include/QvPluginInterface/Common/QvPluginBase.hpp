@@ -11,13 +11,13 @@
 
 namespace Qv2rayPlugin
 {
-    constexpr inline auto QV2RAY_PLUGIN_INTERFACE_VERSION = 4;
+    constexpr inline auto QV2RAY_PLUGIN_INTERFACE_VERSION = 5;
     Q_NAMESPACE
 
     ///
     /// \brief The QV2RAY_PLUGIN_COMPONENT_TYPE enum indicates different core capability of a plugin
     ///
-    enum QV2RAY_PLUGIN_COMPONENT_TYPE
+    enum PLUGIN_COMPONENT_TYPE
     {
         COMPONENT_EVENT_HANDLER = 0,
         COMPONENT_GUI = 1,
@@ -26,12 +26,12 @@ namespace Qv2rayPlugin
         COMPONENT_SUBSCRIPTION_ADAPTER = 4,
         COMPONENT_LATENCY_TEST_ENGINE = 5,
     };
-    Q_ENUM_NS(QV2RAY_PLUGIN_COMPONENT_TYPE)
+    Q_ENUM_NS(PLUGIN_COMPONENT_TYPE)
 
     ///
     /// \brief The QV2RAY_PLUGIN_GUI_COMPONENT_TYPE enum indicates different GUI capability of a plugin
     ///
-    enum QV2RAY_PLUGIN_GUI_COMPONENT_TYPE
+    enum PLUGIN_GUI_COMPONENT_TYPE
     {
         ///
         /// \brief The plugin has a settings widget.
@@ -54,7 +54,7 @@ namespace Qv2rayPlugin
         ///
         GUI_COMPONENT_TRAY_MENUS = 4
     };
-    Q_ENUM_NS(QV2RAY_PLUGIN_GUI_COMPONENT_TYPE)
+    Q_ENUM_NS(PLUGIN_GUI_COMPONENT_TYPE)
 
     struct QvPluginMetadata
     {
@@ -90,20 +90,20 @@ namespace Qv2rayPlugin
         ///
         /// \brief A List of QV2RAY_PLUGIN_COMPONENT_TYPEs to indicate what this plugin can do.
         ///
-        QList<QV2RAY_PLUGIN_COMPONENT_TYPE> Components;
+        QList<PLUGIN_COMPONENT_TYPE> Components;
 
-        QvPluginMetadata(QString name,                                                   //
-                         QString author,                                                 //
-                         PluginId id,                                                    //
-                         QString description,                                            //
-                         QString url,                                                    //
-                         const QList<QV2RAY_PLUGIN_COMPONENT_TYPE> &supportedComponents) //
-            : Name(std::move(name)),                                                     //
-              Author(std::move(author)),                                                 //
-              InternalID(std::move(id)),                                                 //
-              Description(std::move(description)),                                       //
-              Url(std::move(url)),                                                       //
-              Components(supportedComponents){};                                         //
+        QvPluginMetadata(QString name,                                            //
+                         QString author,                                          //
+                         PluginId id,                                             //
+                         QString description,                                     //
+                         QString url,                                             //
+                         const QList<PLUGIN_COMPONENT_TYPE> &supportedComponents) //
+            : Name(std::move(name)),                                              //
+              Author(std::move(author)),                                          //
+              InternalID(std::move(id)),                                          //
+              Description(std::move(description)),                                //
+              Url(std::move(url)),                                                //
+              Components(supportedComponents){};                                  //
         QvPluginMetadata() = default;
     };
 } // namespace Qv2rayPlugin

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CommonSafeType.hpp"
-#include "JsonConversion/JsonConversion.hpp"
+#include "Utils/JsonConversion.hpp"
 
 #include <QHash>
 #include <QJsonArray>
@@ -11,6 +11,9 @@
 
 namespace Qv2rayPlugin::Common::_base_types
 {
+    constexpr unsigned int LATENCY_TEST_VALUE_ERROR = 99999;
+    constexpr unsigned int LATENCY_TEST_VALUE_NODATA = LATENCY_TEST_VALUE_ERROR - 1;
+
     const static inline ConnectionId NullConnectionId;
 
     const static inline GroupId NullGroupId;
@@ -73,6 +76,7 @@ namespace Qv2rayPlugin::Common::_base_types
     {
         system_clock::time_point last_connected;
         StatisticsObject statistics;
+        long latency = LATENCY_TEST_VALUE_NODATA;
         int _group_ref = 0;
         QJS_FUNC_JSON(F(last_connected, statistics), B(BaseConfigTaggedObject))
     };
@@ -103,46 +107,128 @@ namespace Qv2rayPlugin::Common::_base_types
         QJS_FUNC_JSON(F(connections, route_id, subscription_config), B(BaseConfigTaggedObject))
     };
 
+    struct PortRange
+    {
+        int from, to;
+        operator QString() const
+        {
+            return QString::number(from) + "-" + QString::number(to);
+        }
+    };
+
+    struct RuleObject : public BaseTaggedObject
+    {
+        bool enabled = true;
+
+        QStringList inboundTags;
+        QString outboundTag;
+
+        QStringList sourceAddresses;
+        QStringList targetDomains;
+        QStringList targetIPs;
+
+        PortRange sourcePort;
+        PortRange targetPort;
+
+        QStringList networks;
+        QStringList protocols;
+        QString attrs;
+
+        QStringList processes;
+
+        RuleExtraSettings extraSettings = RuleExtraSettings{};
+    };
+
     struct RoutingObject : public BaseConfigTaggedObject
     {
-        QList<RouteRule> rules;
+        QList<RuleObject> rules;
         int _group_ref = 0;
         QJS_FUNC_JSON(F(rules), B(BaseConfigTaggedObject))
     };
 
-    struct ChainObject : public BaseTaggedObject
+    struct IOProtocolStreamSettings
     {
-        struct ChainSource
-        {
-            ~ChainSource() noexcept = default;
-            // clang-format off
-            enum { TAG, CONNECTIONID } source;
-            // clang-format on
-            QString tag;
-            ConnectionId id;
-            QJS_FUNC_JSON(F(source, tag, id))
-        };
+        IOProtocolSettings protocolSettings = IOProtocolSettings{};
+        IOStreamSettings streamSettings = IOStreamSettings{};
+        QJS_FUNC_JSON(F(protocolSettings, streamSettings))
+    };
 
+    struct InboundObject : public BaseTaggedObject
+    {
+        QString listenAddress;
+        QString listenPort;
+        QString protocol;
+        IOProtocolStreamSettings inboundSettings;
+        InboundExtraSettings extraSettings;
+        static InboundObject Create(QString name, QString proto, QString addr, QString port, //
+                                    IOProtocolSettings protocol = IOProtocolSettings{},      //
+                                    IOStreamSettings stream = IOStreamSettings{})
+        {
+            InboundObject in;
+            in.name = name;
+            in.protocol = proto;
+            in.listenAddress = addr;
+            in.listenPort = port;
+            in.inboundSettings.protocolSettings = protocol;
+            in.inboundSettings.streamSettings = stream;
+            return in;
+        }
+        QJS_FUNC_JSON(F(listenAddress, listenPort, protocol, inboundSettings, extraSettings), B(BaseTaggedObject))
+    };
+
+    struct BalancerSettings : public BaseTaggedObject
+    {
+        QString selectorType;
+        BalancerSelectorSettings selectorSettings = BalancerSelectorSettings{};
+    };
+
+    struct ChainSettings : public BaseTaggedObject
+    {
         int chaining_port;
-        QList<ChainSource> chains;
+        QStringList chains;
         QJS_FUNC_JSON(F(chains, chaining_port), B(BaseTaggedObject))
     };
 
     struct OutboundObject : public BaseTaggedObject
     {
+        enum OutboundObjectType
+        {
+            ORIGINAL,
+            EXTERNAL,
+            BALANCER,
+            CHAIN
+        };
+
         QString protocol;
+        OutboundObjectType objectType;
         KernelId kernel = NullKernelId;
-        OutboundSettings settings;
-        QJS_FUNC_JSON(F(protocol, kernel, settings), B(BaseTaggedObject))
+
+        ConnectionId externalId = NullConnectionId;
+        IOProtocolStreamSettings outboundSettings;
+        BalancerSettings balancerSettings;
+        ChainSettings chainSettings;
+
+        QJS_FUNC_JSON(F(protocol, objectType, kernel, outboundSettings), B(BaseTaggedObject))
     };
 
     struct ProfileContent : public BaseTaggedObject
     {
+        ProfileContent() : BaseTaggedObject(){};
+        explicit ProfileContent(const OutboundObject &out) : BaseTaggedObject()
+        {
+            outbounds << out;
+        };
         KernelId defaultKernel = NullKernelId;
         QList<InboundObject> inbounds;
         QList<OutboundObject> outbounds;
         RoutingObject routing;
         QJS_FUNC_JSON(F(defaultKernel, inbounds, outbounds, routing), B(BaseTaggedObject))
+        static auto fromJson(const QJsonObject &o)
+        {
+            ProfileContent profile;
+            profile.loadJson(o);
+            return profile;
+        };
     };
 
     enum IOBOUND_DATA_TYPE
@@ -154,6 +240,11 @@ namespace Qv2rayPlugin::Common::_base_types
         IO_SNI = 4
     };
 
+    inline size_t qHash(const ConnectionGroupPair &c, size_t seed) noexcept
+    {
+        return qHashMulti(seed, c.connectionId, c.groupId);
+    }
+
     typedef QMap<IOBOUND_DATA_TYPE, QVariant> PluginIOBoundData;
 } // namespace Qv2rayPlugin::Common::_base_types
 
@@ -164,6 +255,8 @@ Q_DECLARE_METATYPE(ConnectionGroupPair)
 Q_DECLARE_METATYPE(ConnectionObject)
 Q_DECLARE_METATYPE(GroupObject)
 Q_DECLARE_METATYPE(RoutingObject)
-Q_DECLARE_METATYPE(ChainObject)
+Q_DECLARE_METATYPE(ChainSettings)
+Q_DECLARE_METATYPE(IOProtocolStreamSettings)
+Q_DECLARE_METATYPE(BalancerSettings)
 Q_DECLARE_METATYPE(OutboundObject)
 Q_DECLARE_METATYPE(ProfileContent)

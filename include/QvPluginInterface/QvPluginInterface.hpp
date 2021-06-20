@@ -25,7 +25,10 @@ namespace Qv2rayPlugin
     using namespace Qv2rayPlugin::Subscription;
     using namespace Qv2rayPlugin::Latency;
 
-    class PluginGUIInterface;
+    namespace Gui
+    {
+        class PluginGUIInterface;
+    }
     class Qv2rayInterface;
 
     ///
@@ -45,8 +48,8 @@ namespace Qv2rayPlugin
         friend class Qv2rayPlugin::Subscription::SubscriptionDecoder;
         friend class Qv2rayPlugin::Subscription::ISubscriptionHandler;
         friend class Qv2rayPlugin::Latency::ILatencyHandler;
+        friend class Qv2rayPlugin::Gui::PluginGUIInterface;
         friend class Qv2rayBase::Plugin::PluginManagerCore;
-        friend class PluginGUIInterface;
 
       public:
         /// \internal
@@ -88,7 +91,7 @@ namespace Qv2rayPlugin
         {
             return m_LatencyTestHandler;
         }
-        virtual PluginGUIInterface *GetGUIInterface() const final
+        virtual Gui::PluginGUIInterface *GetGUIInterface() const final
         {
             return m_GUIInterface;
         }
@@ -134,7 +137,7 @@ namespace Qv2rayPlugin
         std::shared_ptr<Qv2rayPlugin::Latency::ILatencyHandler> m_LatencyTestHandler;
 
         // Not defined as a shared_ptr since not all plugins need QtGui
-        PluginGUIInterface *m_GUIInterface;
+        Gui::PluginGUIInterface *m_GUIInterface;
 
       private:
         Qv2rayPlugin::Connections::IProfileManager *m_ConnectionManager;

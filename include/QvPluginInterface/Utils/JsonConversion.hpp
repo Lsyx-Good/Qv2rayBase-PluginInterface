@@ -20,6 +20,11 @@ template<typename C> struct has_JsonOperators { constexpr static auto value = ha
 
 #define __FROMJSON_B(name) name::loadJson(json);
 #define __FROMJSON_F(name) JsonStructHelper::Deserialize(this->name, json.toObject()[#name]);
+#define __FROMJSON_P(name) JsonStructHelper::Deserialize(this->name, json.toObject()[#name]);
+
+#define __TOJSON_P(name)                                                                                                                                                 \
+    if (this->name.isRequired || !this->name.isDefault())                                                                                                                \
+        json.insert(#name, JsonStructHelper::Serialize(this->name));
 #define __TOJSON_F(name) json.insert(#name, JsonStructHelper::Serialize(this->name));
 #define __TOJSON_B(base) JsonStructHelper::MergeJson(json, base::toJson());
 
@@ -27,12 +32,14 @@ template<typename C> struct has_JsonOperators { constexpr static auto value = ha
 // Load JSON Wrapper
 #define _QJS_FROM_JSON_F(...) FOR_EACH_2(__FROMJSON_F, __VA_ARGS__)
 #define _QJS_FROM_JSON_B(...) FOR_EACH_2(__FROMJSON_B, __VA_ARGS__)
+#define _QJS_FROM_JSON_P(...) FOR_EACH_2(__FROMJSON_P, __VA_ARGS__)
 #define _QJS_FROM_JSON_BF(option) _QJS_FROM_JSON_##option
 
 // ============================================================================================
 // To JSON Wrapper
 #define _QJS_TO_JSON_F(...) FOR_EACH_2(__TOJSON_F, __VA_ARGS__)
 #define _QJS_TO_JSON_B(...) FOR_EACH_2(__TOJSON_B, __VA_ARGS__)
+#define _QJS_TO_JSON_P(...) FOR_EACH_2(__TOJSON_P, __VA_ARGS__)
 #define _QJS_TO_JSON_BF(option) _QJS_TO_JSON_##option
 
 // ============================================================================================
@@ -50,10 +57,15 @@ template<typename C> struct has_JsonOperators { constexpr static auto value = ha
     }
 
 template<typename T>
-void QJsonStructDeserializer(T &t, const QJsonValue &d);
-
-template<typename T>
-QJsonValue QJsonStructSerializer(const T &t);
+struct QJsonStructSerializer
+{
+    enum
+    {
+        Defined = 0
+    };
+    static void Deserialize(T &t, const QJsonValue &d);
+    static QJsonValue Serialize(const T &t);
+};
 
 class JsonStructHelper
 {
@@ -120,10 +132,12 @@ class JsonStructHelper
             t = d.toObject();
         else if constexpr (std::is_same_v<T, QJsonArray>)
             t = d.toArray();
+        else if constexpr (::QJsonStructSerializer<T>::Defined == 1)
+            ::QJsonStructSerializer<T>::Deserialize(t, d);
         else if constexpr (has_JsonOperators<T>::value)
             t.loadJson(d);
         else
-            ::QJsonStructDeserializer<T>(t, d);
+            assert(false);
     }
 
     // =========================== Serialize ===========================
@@ -184,9 +198,11 @@ class JsonStructHelper
             return t;
         else if constexpr (std::is_same_v<T, QJsonArray>)
             return t;
+        else if constexpr (::QJsonStructSerializer<T>::Defined == 1)
+            return ::QJsonStructSerializer<T>::Serialize(t);
         else if constexpr (has_JsonOperators<T>::value)
             return t.toJson();
         else
-            return ::QJsonStructSerializer<T>(t);
+            assert(false);
     }
 };

@@ -32,7 +32,7 @@ namespace Qv2rayPlugin::Kernel
       public:
         explicit PluginKernel() : QObject(){};
         virtual ~PluginKernel() override = default;
-        virtual void SetConnectionSettings(const QMap<KernelOptionFlags, QVariant> &settings, const OutboundSettings &connectionInfo) = 0;
+        virtual void SetConnectionSettings(const QMap<KernelOptionFlags, QVariant> &settings, const IOProtocolStreamSettings &connectionInfo) = 0;
         virtual void SetProfileContent(const ProfileContent &){};
         virtual bool Start() = 0;
         virtual bool Stop() = 0;

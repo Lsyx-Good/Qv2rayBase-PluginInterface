@@ -20,6 +20,7 @@ namespace Qv2rayPlugin::Connections
         virtual const QList<GroupId> GetGroups() const = 0;
         virtual const QList<GroupId> GetGroups(const ConnectionId &connId) const = 0;
 
+        virtual bool RestartConnection() = 0;
         virtual bool StartConnection(const ConnectionGroupPair &identifier) = 0;
         virtual void StopConnection() = 0;
 

@@ -1,38 +1,11 @@
-find_package(Qt6 COMPONENTS Core REQUIRED)
-set(CMAKE_AUTOMOC ON)
-
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-get_target_property(QVPLUGIN_INTERFACE_INCLUDE_PATH_ROOT Qv2ray::QvPluginInterface INTERFACE_INCLUDE_DIRECTORIES)
 
-if("${QVPLUGIN_INTERFACE_INCLUDE_PATH}" STREQUAL "")
-    set(QVPLUGIN_INTERFACE_INCLUDE_PATH ${QVPLUGIN_INTERFACE_INCLUDE_PATH_ROOT}/QvPluginInterface)
-endif()
-
-message(STATUS "QvPluginInterface headers: ${QVPLUGIN_INTERFACE_INCLUDE_PATH}")
-
-set(QVGUIPLUGIN_INTERFACE_INCLUDE_PATH
-    ${QVPLUGIN_INTERFACE_INCLUDE_PATH}/Gui)
-
-set(QVGUIPLUGIN_INTERFACE_HEADERS
-    ${QVGUIPLUGIN_INTERFACE_INCLUDE_PATH}/QvGUIPluginInterface.hpp)
-
-set(QVPLUGIN_INTERFACE_HEADERS
-    ${QVPLUGIN_INTERFACE_INCLUDE_PATH}/QvPluginBase.hpp
-    ${QVPLUGIN_INTERFACE_INCLUDE_PATH}/QvPluginInterface.hpp
-    ${QVPLUGIN_INTERFACE_INCLUDE_PATH}/Handlers/EventHandler.hpp
-    ${QVPLUGIN_INTERFACE_INCLUDE_PATH}/Handlers/KernelHandler.hpp
-    ${QVPLUGIN_INTERFACE_INCLUDE_PATH}/Handlers/OutboundHandler.hpp
-    ${QVPLUGIN_INTERFACE_INCLUDE_PATH}/Handlers/SubscriptionHandler.hpp
-    ${QVPLUGIN_INTERFACE_INCLUDE_PATH}/Connections/ConnectionsBase.hpp
-    ${QVPLUGIN_INTERFACE_INCLUDE_PATH}/Connections/ConnectionsBaseTypes.hpp
-    )
-
-set(QVPLUGIN_HTTP_TO_SOCKS_INCLUDE_PATH
-    ${QVPLUGIN_INTERFACE_INCLUDE_PATH}/Socksify)
-
-set(QVPLUGIN_HTTP_TO_SOCKS_HEADERS
-    ${QVPLUGIN_HTTP_TO_SOCKS_INCLUDE_PATH}/HttpProxy.hpp
-    ${QVPLUGIN_HTTP_TO_SOCKS_INCLUDE_PATH}/SocketStream.hpp)
+function(qv2ray_add_plugin_moc_sources TARGET)
+    if(NOT QvPluginInterface_Prefix)
+        get_filename_component(QvPluginInterface_Prefix "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../include/QvPluginInterface/" ABSOLUTE)
+    endif()
+    target_sources(${TARGET} PRIVATE ${QvPluginInterface_Prefix}/Utils/BindableProps.hpp)
+endfunction()
 
 function(qv2ray_configure_plugin TARGET_NAME)
     set(options GUI Quick Widgets NO_INSTALL NO_RPATH HTTP_TO_SOCKS)
@@ -42,7 +15,6 @@ function(qv2ray_configure_plugin TARGET_NAME)
         INSTALL_PREFIX_MACOS
         INSTALL_PREFIX_ANDROID)
     set(multiValueArgs)
-
     cmake_parse_arguments(QVPLUGIN "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     # ====================================== BEGIN PARSING ARGUMENTS
@@ -91,22 +63,29 @@ function(qv2ray_configure_plugin TARGET_NAME)
     endif()
     # ====================================== END PARSING ARGUMENTS
 
-    target_sources(${TARGET_NAME} PRIVATE ${QVPLUGIN_INTERFACE_HEADERS})
-    target_link_libraries(${TARGET_NAME} PRIVATE Qt::Core)
-    target_include_directories(${TARGET_NAME} PRIVATE ${QVPLUGIN_INTERFACE_INCLUDE_PATH})
+    if(NOT QvPluginInterface_Prefix)
+        get_filename_component(QvPluginInterface_Prefix "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../include/QvPluginInterface/" ABSOLUTE)
+    endif()
+
+    qv2ray_add_plugin_moc_sources(${TARGET_NAME})
+
+    find_package(Qt6 COMPONENTS Core REQUIRED)
+    target_link_libraries(${TARGET_NAME} PRIVATE Qt::Core Qv2ray::QvPluginInterface)
 
     if(QVPLUGIN_HTTP_TO_SOCKS)
         find_package(Qt6 COMPONENTS Network REQUIRED)
-        target_sources(${TARGET_NAME} PRIVATE ${QVPLUGIN_HTTP_TO_SOCKS_HEADERS})
         target_link_libraries(${TARGET_NAME} PRIVATE Qt::Network)
-        target_include_directories(${TARGET_NAME} PRIVATE ${QVPLUGIN_HTTP_TO_SOCKS_INCLUDE_PATH})
+        target_include_directories(${TARGET_NAME} PRIVATE ${QvPluginInterface_Prefix}/Socksify)
+        target_sources(${TARGET_NAME}
+            PUBLIC
+            ${QvPluginInterface_Prefix}/HttpProxy.hpp
+            ${QvPluginInterface_Prefix}/SocketStream.hpp)
     endif()
 
     if(QVPLUGIN_GUI)
         find_package(Qt6 COMPONENTS Gui REQUIRED)
         target_link_libraries(${TARGET_NAME} PRIVATE Qt::Gui)
-        target_include_directories(${TARGET_NAME} PRIVATE ${QVGUIPLUGIN_INTERFACE_INCLUDE_PATH})
-        target_sources(${TARGET_NAME} PRIVATE ${QVGUIPLUGIN_INTERFACE_HEADERS})
+        target_include_directories(${TARGET_NAME} PRIVATE "${QvPluginInterface_Prefix}/Gui")
     endif()
 
     if(QVPLUGIN_Quick)

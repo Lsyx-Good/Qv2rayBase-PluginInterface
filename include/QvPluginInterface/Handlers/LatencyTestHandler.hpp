@@ -9,9 +9,6 @@ namespace uvw
 
 namespace Qv2rayPlugin::Latency
 {
-    constexpr unsigned int LATENCY_TEST_VALUE_ERROR = 99999;
-    constexpr unsigned int LATENCY_TEST_VALUE_NODATA = LATENCY_TEST_VALUE_ERROR - 1;
-
     struct LatencyTestRequest
     {
         LatencyTestEngineId engine;
