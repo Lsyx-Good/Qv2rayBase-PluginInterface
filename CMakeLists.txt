@@ -64,18 +64,25 @@ install(TARGETS QvPluginInterface
 
 install(EXPORT QvPluginInterfaceTargets
     NAMESPACE Qv2ray::
+    COMPONENT "development"
+    EXCLUDE_FROM_ALL
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/QvPluginInterface
 )
 
-install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/QvPluginInterfaceConfig.cmake
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/QvPluginInterfaceConfig.cmake
+    COMPONENT "development"
+    EXCLUDE_FROM_ALL
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/QvPluginInterface)
 
-install(FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/QvPluginInterfaceMacros.cmake
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/cmake/QvPluginInterfaceMacros.cmake
+    COMPONENT "development"
+    EXCLUDE_FROM_ALL
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/QvPluginInterface)
 
-install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
+    COMPONENT "development"
+    EXCLUDE_FROM_ALL
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 export(EXPORT QvPluginInterfaceTargets
     FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/QvPluginInterfaceTargets.cmake"
