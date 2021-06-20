@@ -17,7 +17,7 @@ namespace Qv2rayPlugin::Common::_base_types::safetype
         template<class... Args> explicit SafeJsonType(Args... args) : QJsonObject(args...) {};
         const QJsonObject &raw() const { return *this; }
         QJsonObject toJson() const { return *this; }
-        void loadJson(const QJsonValue &d) { *this = std::remove_cvref_t<decltype (*this)> { d.toObject() }; }
+        void loadJson(const QJsonValue &d) { *this = std::remove_cv_t<std::remove_reference_t<decltype (*this)>> { d.toObject() }; }
         template<typename TTarget> TTarget CopyAs() const { return TTarget(raw()); }
         // clang-format on
         template<typename TTarget>

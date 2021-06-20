@@ -136,7 +136,7 @@ struct JsonStructHelper
     template<typename T>
     static void Deserialize(T &t, const QJsonValue &d)
     {
-        using _T = std::remove_cvref_t<T>;
+        using _T = std::remove_cv_t<std::remove_reference_t<T>>;
         if constexpr (std::is_enum_v<_T>)
             t = (T) d.toInt();
         else if constexpr (std::is_same_v<_T, QJsonObject>)
@@ -205,7 +205,7 @@ struct JsonStructHelper
     template<typename T>
     static QJsonValue Serialize(const T &t)
     {
-        using _T = std::remove_cvref_t<T>;
+        using _T = std::remove_cv_t<std::remove_reference_t<T>>;
         if constexpr (std::is_enum_v<T>)
             return (int) t;
         else if constexpr (std::is_same_v<_T, QJsonObject>)
