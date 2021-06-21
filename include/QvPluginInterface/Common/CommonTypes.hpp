@@ -66,8 +66,8 @@ namespace Qv2rayPlugin::Common::_base_types
         struct StatsEntry { quint64 up; quint64 down; QJS_FUNC_JSON(F(up, down)) };
         StatsEntry &operator[](StatisticsType i) { while (entries.count() <= i) entries.append(StatsEntry{}); return entries[i]; }
         void clear() { entries.clear(); }
-        QJsonValue toJson() const { return JsonStructHelper::Serialize(entries); }
-        void loadJson(const QJsonObject &d) { JsonStructHelper::Deserialize(entries, d); }
+        QJsonObject toJson() const { return JsonStructHelper::Serialize(entries).toObject(); }
+        void loadJson(const QJsonValue &d) { JsonStructHelper::Deserialize(entries, d); }
         // clang-format on
 
       private:
@@ -219,7 +219,7 @@ namespace Qv2rayPlugin::Common::_base_types
         };
 
         QString protocol;
-        OutboundObjectType objectType;
+        OutboundObjectType objectType = ORIGINAL;
         KernelId kernel = NullKernelId;
 
         ConnectionId externalId = NullConnectionId;
