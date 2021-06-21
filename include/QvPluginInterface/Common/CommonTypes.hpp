@@ -164,34 +164,34 @@ namespace Qv2rayPlugin::Common::_base_types
         QJS_FUNC_JSON(F(rules), B(BaseConfigTaggedObject))
     };
 
-    struct IOProtocolStreamSettings
+    struct IOConnectionSettings
     {
+        QString protocol;
         IOProtocolSettings protocolSettings = IOProtocolSettings{};
         IOStreamSettings streamSettings = IOStreamSettings{};
-        QJS_FUNC_JSON(F(protocolSettings, streamSettings))
+        QJS_FUNC_JSON(F(protocol, protocolSettings, streamSettings))
     };
 
     struct InboundObject : public BaseTaggedObject
     {
         QString listenAddress;
         QString listenPort;
-        QString protocol;
-        IOProtocolStreamSettings inboundSettings;
-        InboundExtraSettings extraSettings;
+        IOConnectionSettings inboundSettings;
+        InboundExtraSettings extraSettings = InboundExtraSettings{};
         static InboundObject Create(QString name, QString proto, QString addr, QString port, //
                                     IOProtocolSettings protocol = IOProtocolSettings{},      //
                                     IOStreamSettings stream = IOStreamSettings{})
         {
             InboundObject in;
             in.name = name;
-            in.protocol = proto;
             in.listenAddress = addr;
             in.listenPort = port;
+            in.inboundSettings.protocol = proto;
             in.inboundSettings.protocolSettings = protocol;
             in.inboundSettings.streamSettings = stream;
             return in;
         }
-        QJS_FUNC_JSON(F(listenAddress, listenPort, protocol, inboundSettings, extraSettings), B(BaseTaggedObject))
+        QJS_FUNC_JSON(F(listenAddress, listenPort, inboundSettings, extraSettings), B(BaseTaggedObject))
     };
 
     struct BalancerSettings : public BaseTaggedObject
@@ -218,16 +218,22 @@ namespace Qv2rayPlugin::Common::_base_types
             CHAIN
         };
 
-        QString protocol;
+        OutboundObject(){};
+        OutboundObject(const IOConnectionSettings &settings) : objectType(ORIGINAL), outboundSettings(settings){};
+        OutboundObject(const ConnectionId &external) : objectType(EXTERNAL), externalId(external){};
+        OutboundObject(const BalancerSettings &balancer) : objectType(BALANCER), balancerSettings(balancer){};
+        OutboundObject(const ChainSettings &chain) : objectType(CHAIN), chainSettings(chain){};
+
         OutboundObjectType objectType = ORIGINAL;
+
         KernelId kernel = NullKernelId;
 
         ConnectionId externalId = NullConnectionId;
-        IOProtocolStreamSettings outboundSettings;
+        IOConnectionSettings outboundSettings;
         BalancerSettings balancerSettings;
         ChainSettings chainSettings;
 
-        QJS_FUNC_JSON(F(protocol, objectType, kernel, externalId, outboundSettings, balancerSettings, chainSettings), B(BaseTaggedObject))
+        QJS_FUNC_JSON(F(objectType, kernel, externalId, outboundSettings, balancerSettings, chainSettings), B(BaseTaggedObject))
     };
 
     struct ProfileContent : public BaseTaggedObject
@@ -275,7 +281,7 @@ Q_DECLARE_METATYPE(ConnectionObject)
 Q_DECLARE_METATYPE(GroupObject)
 Q_DECLARE_METATYPE(RoutingObject)
 Q_DECLARE_METATYPE(ChainSettings)
-Q_DECLARE_METATYPE(IOProtocolStreamSettings)
+Q_DECLARE_METATYPE(IOConnectionSettings)
 Q_DECLARE_METATYPE(BalancerSettings)
 Q_DECLARE_METATYPE(OutboundObject)
 Q_DECLARE_METATYPE(ProfileContent)

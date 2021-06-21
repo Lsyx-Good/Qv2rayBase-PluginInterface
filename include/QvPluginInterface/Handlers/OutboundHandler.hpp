@@ -13,8 +13,8 @@ namespace Qv2rayPlugin::Outbound
         virtual std::optional<QString> Serialize(const QString &name, const OutboundObject &outbound) const = 0;
         virtual std::optional<std::pair<QString, OutboundObject>> Deserialize(const QString &link) const = 0;
 
-        virtual std::optional<PluginIOBoundData> GetOutboundInfo(const QString &protocol, const IOProtocolStreamSettings &outbound) const = 0;
-        virtual bool SetOutboundInfo(const QString &protocol, IOProtocolStreamSettings &outbound, const PluginIOBoundData &info) const = 0;
+        virtual std::optional<PluginIOBoundData> GetOutboundInfo(const IOConnectionSettings &outbound) const = 0;
+        virtual bool SetOutboundInfo(IOConnectionSettings &outbound, const PluginIOBoundData &info) const = 0;
 
         virtual QList<QString> SupportedProtocols() const = 0;
         virtual QList<QString> SupportedLinkPrefixes() const = 0;
