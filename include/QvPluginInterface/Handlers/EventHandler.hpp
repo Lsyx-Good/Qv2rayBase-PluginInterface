@@ -48,11 +48,11 @@ namespace Qv2rayPlugin::Event
         struct EventObject
         {
             EventType Type;
-            ConnectionGroupPair Connection;
+            ProfileId Connection;
             QMap<QString, PluginIOBoundData> InboundData;
             QMap<QString, PluginIOBoundData> OutboundData;
             EventObject(){};
-            EventObject(const EventType &event, const ConnectionGroupPair &conn, const QMap<QString, PluginIOBoundData> &in = {},
+            EventObject(const EventType &event, const ProfileId &conn, const QMap<QString, PluginIOBoundData> &in = {},
                         const QMap<QString, PluginIOBoundData> &out = {})
                 : Type(event), Connection(conn), InboundData(in), OutboundData(out){};
         };

@@ -37,16 +37,16 @@ namespace Qv2rayPlugin::Common::_base_types
 
     const static inline KernelId NullKernelId;
 
-    struct ConnectionGroupPair
+    struct ProfileId
     {
         ConnectionId connectionId = NullConnectionId;
         GroupId groupId = NullGroupId;
 
         // clang-format off
-        ConnectionGroupPair(){};
-        ConnectionGroupPair(const ConnectionId &conn, const GroupId &group) { connectionId = conn, groupId = group; }
-        inline bool operator==(const ConnectionGroupPair &rhs) const { return connectionId == rhs.connectionId && groupId == rhs.groupId; }
-        inline bool operator!=(const ConnectionGroupPair &rhs) const { return !(*this == rhs); }
+        ProfileId(){};
+        ProfileId(const ConnectionId &conn, const GroupId &group) { connectionId = conn, groupId = group; }
+        inline bool operator==(const ProfileId &rhs) const { return connectionId == rhs.connectionId && groupId == rhs.groupId; }
+        inline bool operator!=(const ProfileId &rhs) const { return !(*this == rhs); }
         inline void clear() { connectionId = NullConnectionId, groupId = NullGroupId; }
         inline bool isNull() const { return groupId == NullGroupId || connectionId == NullConnectionId; }
         // clang-format on
@@ -236,10 +236,10 @@ namespace Qv2rayPlugin::Common::_base_types
         QJS_FUNC_JSON(F(objectType, kernel, externalId, outboundSettings, balancerSettings, chainSettings), B(BaseTaggedObject))
     };
 
-    struct ProfileContent : public BaseTaggedObject
+    struct ProfileContent
     {
-        ProfileContent() : BaseTaggedObject(){};
-        explicit ProfileContent(const OutboundObject &out) : BaseTaggedObject()
+        ProfileContent(){};
+        explicit ProfileContent(const OutboundObject &out)
         {
             outbounds << out;
         };
@@ -247,7 +247,8 @@ namespace Qv2rayPlugin::Common::_base_types
         QList<InboundObject> inbounds;
         QList<OutboundObject> outbounds;
         RoutingObject routing;
-        QJS_FUNC_JSON(F(defaultKernel, inbounds, outbounds, routing), B(BaseTaggedObject))
+        QJsonObject extraOptions;
+        QJS_FUNC_JSON(F(defaultKernel, inbounds, outbounds, routing))
         static auto fromJson(const QJsonObject &o)
         {
             ProfileContent profile;
@@ -265,7 +266,7 @@ namespace Qv2rayPlugin::Common::_base_types
         IO_SNI = 4
     };
 
-    inline size_t qHash(const ConnectionGroupPair &c, size_t seed) noexcept
+    inline size_t qHash(const ProfileId &c, size_t seed) noexcept
     {
         return qHashMulti(seed, c.connectionId, c.groupId);
     }
@@ -276,7 +277,7 @@ namespace Qv2rayPlugin::Common::_base_types
 // Expose all basic type decls to global namespace
 using namespace Qv2rayPlugin::Common::_base_types;
 
-Q_DECLARE_METATYPE(ConnectionGroupPair)
+Q_DECLARE_METATYPE(ProfileId)
 Q_DECLARE_METATYPE(ConnectionObject)
 Q_DECLARE_METATYPE(GroupObject)
 Q_DECLARE_METATYPE(RoutingObject)
