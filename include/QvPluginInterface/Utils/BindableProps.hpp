@@ -68,6 +68,7 @@ struct Bindable : public INotifiable
     {
         static_assert(std::is_invocable<TCallback, const T &>::value, "Callback function must be callable with a const reference parameter T");
         QObject::connect(this, &INotifiable::notify, [this, callback] { callback(value); });
+        callback(value);
     }
 
     inline void WriteBind(Bindable<T> *propTarget)
