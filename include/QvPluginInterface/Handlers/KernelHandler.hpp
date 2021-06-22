@@ -32,14 +32,15 @@ namespace Qv2rayPlugin::Kernel
         explicit PluginKernel() : QObject(){};
         virtual ~PluginKernel() = default;
         virtual void SetConnectionSettings(const QMap<KernelOptionFlags, QVariant> &settings, const IOConnectionSettings &connectionInfo) = 0;
-        virtual void SetProfileContent(const ProfileContent &){};
-        virtual bool Start() = 0;
+        virtual void SetProfileContent(const ProfileContent &, const RoutingObject &){};
+        virtual bool PrepareConfigurations() = 0;
+        virtual void Start() = 0;
         virtual bool Stop() = 0;
         virtual KernelId GetKernelId() const = 0;
 
       signals:
         void OnCrashed(const QString &);
-        void OnKernelLog(const QString &);
+        void OnLog(const QString &);
         void OnStatsAvailable(quint64 upSpeed, quint64 downSpeed);
     };
 

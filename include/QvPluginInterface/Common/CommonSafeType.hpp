@@ -40,7 +40,7 @@ namespace Qv2rayPlugin::Common::_base_types::safetype
         inline bool operator!=(const IDType<T> &rhs) const { return m_id != rhs.m_id; }
         inline const QString toString() const { return m_id; }
         inline bool isNull() const { return m_id == "null"; }
-        inline QJsonObject toJson() const { return QJsonValue(m_id).toObject(); }
+        inline QJsonValue toJson() const { return m_id; }
         inline void loadJson(const QJsonValue &d) { m_id = d.toString(); }
         // clang-format on
 

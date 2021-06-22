@@ -94,7 +94,7 @@ namespace Qv2rayPlugin::Common::_base_types
         StatisticsObject statistics;
         long latency = LATENCY_TEST_VALUE_NODATA;
         int _group_ref = 0;
-        QJS_FUNC_JSON(F(last_connected, statistics), B(BaseConfigTaggedObject))
+        QJS_FUNC_JSON(F(last_connected, statistics, latency), B(BaseConfigTaggedObject))
     };
 
     struct SubscriptionConfigObject : public BaseTaggedObject

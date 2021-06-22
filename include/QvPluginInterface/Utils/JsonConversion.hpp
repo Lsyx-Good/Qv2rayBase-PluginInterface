@@ -66,7 +66,7 @@ struct JsonStructHelper
 
     // clang-format off
     template<typename, typename = void> struct has_toJson : public std::false_type {};
-    template<typename C> struct has_toJson<C, typename std::enable_if_t<std::is_convertible_v<decltype(std::declval<C>().toJson()), QJsonObject>>> : public std::true_type {};
+    template<typename C> struct has_toJson<C, typename std::enable_if_t<std::is_convertible_v<decltype(std::declval<C>().toJson()), QJsonValue>>> : public std::true_type {};
     
     template<typename, typename = void> struct has_loadJson : public std::false_type {};
     template<typename C> struct has_loadJson<C, typename std::enable_if_t<std::is_void_v<decltype(std::declval<C>().loadJson(std::declval<const QJsonValue&>()))>>> : public std::true_type {};
