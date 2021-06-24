@@ -130,6 +130,10 @@ namespace Qv2rayPlugin::Common::_base_types
         {
             return QString::number(from) + "-" + QString::number(to);
         }
+        void operator=(const int i)
+        {
+            from = to = i;
+        }
         QJS_FUNC_JSON(F(from, to))
     };
 
@@ -178,14 +182,14 @@ namespace Qv2rayPlugin::Common::_base_types
         PortRange listenPort;
         IOConnectionSettings inboundSettings;
         InboundExtraSettings extraSettings = InboundExtraSettings{};
-        static InboundObject Create(QString name, QString proto, QString addr, PortRange port, //
-                                    IOProtocolSettings protocol = IOProtocolSettings{},        //
+        static InboundObject Create(QString name, QString proto, QString addr, int port, //
+                                    IOProtocolSettings protocol = IOProtocolSettings{},  //
                                     IOStreamSettings stream = IOStreamSettings{})
         {
             InboundObject in;
             in.name = name;
             in.listenAddress = addr;
-            in.listenPort = port;
+            in.listenPort.from = in.listenPort.to = port;
             in.inboundSettings.protocol = proto;
             in.inboundSettings.protocolSettings = protocol;
             in.inboundSettings.streamSettings = stream;
@@ -206,6 +210,13 @@ namespace Qv2rayPlugin::Common::_base_types
         int chaining_port;
         QStringList chains;
         QJS_FUNC_JSON(F(chains, chaining_port), B(BaseTaggedObject))
+    };
+
+    struct MultiplexerObject
+    {
+        bool enabled;
+        int concurrency;
+        QJS_FUNC_JSON(F(enabled, concurrency))
     };
 
     struct OutboundObject : public BaseTaggedObject
@@ -233,7 +244,9 @@ namespace Qv2rayPlugin::Common::_base_types
         BalancerSettings balancerSettings;
         ChainSettings chainSettings;
 
-        QJS_FUNC_JSON(F(objectType, kernel, externalId, outboundSettings, balancerSettings, chainSettings), B(BaseTaggedObject))
+        MultiplexerObject muxSettings;
+
+        QJS_FUNC_JSON(F(objectType, kernel, externalId, outboundSettings, balancerSettings, chainSettings, muxSettings), B(BaseTaggedObject))
     };
 
     struct ProfileContent
