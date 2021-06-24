@@ -81,7 +81,6 @@ using namespace Qv2rayPlugin::Common::_base_types::safetype;
 
 DeclareSafeJson(IOProtocolSettings);
 DeclareSafeJson(IOStreamSettings);
-DeclareSafeJson(InboundExtraSettings);
 DeclareSafeJson(RuleExtraSettings);
 DeclareSafeJson(BalancerSelectorSettings);
 

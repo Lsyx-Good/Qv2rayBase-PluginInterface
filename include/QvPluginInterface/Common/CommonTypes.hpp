@@ -181,7 +181,6 @@ namespace Qv2rayPlugin::Common::_base_types
         QString listenAddress;
         PortRange listenPort;
         IOConnectionSettings inboundSettings;
-        InboundExtraSettings extraSettings = InboundExtraSettings{};
         static InboundObject Create(QString name, QString proto, QString addr, int port, //
                                     IOProtocolSettings protocol = IOProtocolSettings{},  //
                                     IOStreamSettings stream = IOStreamSettings{})
@@ -195,7 +194,7 @@ namespace Qv2rayPlugin::Common::_base_types
             in.inboundSettings.streamSettings = stream;
             return in;
         }
-        QJS_FUNC_JSON(F(listenAddress, listenPort, inboundSettings, extraSettings), B(BaseTaggedObject))
+        QJS_FUNC_JSON(F(listenAddress, listenPort, inboundSettings), B(BaseTaggedObject))
     };
 
     struct BalancerSettings : public BaseTaggedObject
