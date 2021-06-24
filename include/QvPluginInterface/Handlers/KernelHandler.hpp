@@ -22,6 +22,7 @@ namespace Qv2rayPlugin::Kernel
     enum KernelCapabilityFlags
     {
         KERNELCAP_ROUTER = 0,
+        KERNELCAP_HOTRELOAD = 1,
         // KERNELCAP_INBOUNDS, // Unused
         // KERNELCAP_OUTBOUNDS, // Unused
     };
@@ -41,7 +42,7 @@ namespace Qv2rayPlugin::Kernel
       signals:
         void OnCrashed(const QString &);
         void OnLog(const QString &);
-        void OnStatsAvailable(quint64 upSpeed, quint64 downSpeed);
+        void OnStatsAvailable(StatisticsObject);
     };
 
     struct KernelFactory

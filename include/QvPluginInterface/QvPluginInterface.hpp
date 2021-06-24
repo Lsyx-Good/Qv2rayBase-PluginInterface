@@ -36,6 +36,12 @@ namespace Qv2rayPlugin
     ///
     inline Qv2rayInterface *PluginInstance;
 
+    template<typename T>
+    inline T *TPluginInstance()
+    {
+        return dynamic_cast<T *>(PluginInstance);
+    }
+
     ///
     /// \brief The Qv2rayInterface class is the main entry for every Qv2ray plugins.
     ///
@@ -121,6 +127,11 @@ namespace Qv2rayPlugin
         ///
         virtual void SettingsUpdated() = 0;
 
+        QDir WorkingDirectory()
+        {
+            return m_WorkingDirectory;
+        }
+
       protected:
         explicit Qv2rayInterface()
         {
@@ -147,3 +158,6 @@ namespace Qv2rayPlugin
 QT_BEGIN_NAMESPACE
 Q_DECLARE_INTERFACE(Qv2rayPlugin::Qv2rayInterface, Qv2rayInterface_IID)
 QT_END_NAMESPACE
+
+#define QvPluginLog(msg) ::Qv2rayPlugin::PluginInstance->PluginLog(msg)
+#define QvPluginMessageBox(title, msg) ::Qv2rayPlugin::PluginInstance->PluginErrorMessageBox(title, msg)
