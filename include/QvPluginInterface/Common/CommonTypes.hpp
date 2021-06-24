@@ -175,11 +175,11 @@ namespace Qv2rayPlugin::Common::_base_types
     struct InboundObject : public BaseTaggedObject
     {
         QString listenAddress;
-        QString listenPort;
+        PortRange listenPort;
         IOConnectionSettings inboundSettings;
         InboundExtraSettings extraSettings = InboundExtraSettings{};
-        static InboundObject Create(QString name, QString proto, QString addr, QString port, //
-                                    IOProtocolSettings protocol = IOProtocolSettings{},      //
+        static InboundObject Create(QString name, QString proto, QString addr, PortRange port, //
+                                    IOProtocolSettings protocol = IOProtocolSettings{},        //
                                     IOStreamSettings stream = IOStreamSettings{})
         {
             InboundObject in;
