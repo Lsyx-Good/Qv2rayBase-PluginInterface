@@ -30,10 +30,10 @@ namespace Qv2rayPlugin::Common::_base_types
     const static inline ConnectionId NullConnectionId;
 
     const static inline GroupId NullGroupId;
-    const static inline GroupId DefaultGroupId{ "000000000000" };
+    const static inline GroupId DefaultGroupId{ QLatin1String{ "000000000000" } };
 
     const static inline RoutingId NullRoutingId;
-    const static inline RoutingId DefaultRoutingId{ "000000000000" };
+    const static inline RoutingId DefaultRoutingId{ QLatin1String{ "000000000000" } };
 
     const static inline KernelId NullKernelId;
 
@@ -106,7 +106,7 @@ namespace Qv2rayPlugin::Common::_base_types
         };
         bool isSubscription;
         QString address;
-        QString type = "sip008";
+        QString type = QStringLiteral("sip008");
         float updateInterval = 10;
         QList<QString> includeKeywords;
         QList<QString> excludeKeywords;
@@ -128,7 +128,7 @@ namespace Qv2rayPlugin::Common::_base_types
         int from, to;
         operator QString() const
         {
-            return QString::number(from) + "-" + QString::number(to);
+            return QString::number(from) + QStringLiteral("-") + QString::number(to);
         }
         void operator=(const int i)
         {

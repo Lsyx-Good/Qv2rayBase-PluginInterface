@@ -19,11 +19,11 @@ struct Bindable;
     }
 
 #define __FROMJSON_B(name) name::loadJson(json);
-#define __FROMJSON_F(name) ::JsonStructHelper::Deserialize(this->name, json.toObject()[#name]);
-#define __FROMJSON_P(name) ::JsonStructHelper::Deserialize(this->name, json.toObject()[#name]);
+#define __FROMJSON_F(name) ::JsonStructHelper::Deserialize(this->name, json.toObject()[QStringLiteral(#name)]);
+#define __FROMJSON_P(name) ::JsonStructHelper::Deserialize(this->name, json.toObject()[QStringLiteral(#name)]);
 
-#define __TOJSON_P(name) json.insert(#name, ::JsonStructHelper::Serialize(this->name));
-#define __TOJSON_F(name) json.insert(#name, ::JsonStructHelper::Serialize(this->name));
+#define __TOJSON_P(name) json.insert(QStringLiteral(#name), ::JsonStructHelper::Serialize(this->name));
+#define __TOJSON_F(name) json.insert(QStringLiteral(#name), ::JsonStructHelper::Serialize(this->name));
 #define __TOJSON_B(base) ::JsonStructHelper::MergeJson(json, base::toJson());
 
 // ============================================================================================
