@@ -49,11 +49,10 @@ namespace Qv2rayPlugin::Event
         {
             EventType Type;
             ProfileId Connection;
-            QMap<QString, PluginIOBoundData> InboundData;
-            QMap<QString, PluginIOBoundData> OutboundData;
+            QMap<QString, IOBoundData> InboundData;
+            QMap<QString, IOBoundData> OutboundData;
             EventObject(){};
-            EventObject(const EventType &event, const ProfileId &conn, const QMap<QString, PluginIOBoundData> &in = {},
-                        const QMap<QString, PluginIOBoundData> &out = {})
+            EventObject(const EventType &event, const ProfileId &conn, const QMap<QString, IOBoundData> &in = {}, const QMap<QString, IOBoundData> &out = {})
                 : Type(event), Connection(conn), InboundData(in), OutboundData(out){};
         };
     };

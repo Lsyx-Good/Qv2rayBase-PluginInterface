@@ -126,14 +126,15 @@ namespace Qv2rayPlugin::Common::_base_types
     struct PortRange
     {
         int from, to;
-        operator QString() const
-        {
-            return QString::number(from) + QStringLiteral("-") + QString::number(to);
-        }
-        void operator=(const int i)
-        {
-            from = to = i;
-        }
+
+        // clang-format off
+        PortRange() = default;
+        PortRange(int i) : from(i), to(i) {};
+        void operator=(const int i) { from = to = i; }
+        bool operator==(const PortRange &another) const { return from == another.from && to == another.to; }
+        operator QString() const { return from == to ? QString::number(from) : QString::number(from) + QStringLiteral("-") + QString::number(to); }
+        // clang-format on
+
         QJS_FUNC_JSON(F(from, to))
     };
 
@@ -168,33 +169,40 @@ namespace Qv2rayPlugin::Common::_base_types
         QJS_FUNC_JSON(F(rules), B(BaseConfigTaggedObject))
     };
 
+    struct MultiplexerObject
+    {
+        bool enabled;
+        int concurrency;
+        QJS_FUNC_JSON(F(enabled, concurrency))
+    };
+
     struct IOConnectionSettings
     {
         QString protocol;
+        QString address;
+        PortRange port;
         IOProtocolSettings protocolSettings = IOProtocolSettings{};
         IOStreamSettings streamSettings = IOStreamSettings{};
-        QJS_FUNC_JSON(F(protocol, protocolSettings, streamSettings))
+        MultiplexerObject muxSettings;
+        QJS_FUNC_JSON(F(protocol, address, port, protocolSettings, streamSettings, muxSettings))
     };
 
     struct InboundObject : public BaseTaggedObject
     {
-        QString listenAddress;
-        PortRange listenPort;
         IOConnectionSettings inboundSettings;
-        static InboundObject Create(QString name, QString proto, QString addr, int port, //
-                                    IOProtocolSettings protocol = IOProtocolSettings{},  //
+        static InboundObject Create(QString name, QString proto, QString addr, int port, IOProtocolSettings protocol = IOProtocolSettings{},
                                     IOStreamSettings stream = IOStreamSettings{})
         {
             InboundObject in;
             in.name = name;
-            in.listenAddress = addr;
-            in.listenPort.from = in.listenPort.to = port;
+            in.inboundSettings.address = addr;
+            in.inboundSettings.port = port;
             in.inboundSettings.protocol = proto;
             in.inboundSettings.protocolSettings = protocol;
             in.inboundSettings.streamSettings = stream;
             return in;
         }
-        QJS_FUNC_JSON(F(listenAddress, listenPort, inboundSettings), B(BaseTaggedObject))
+        QJS_FUNC_JSON(F(inboundSettings), B(BaseTaggedObject))
     };
 
     struct BalancerSettings : public BaseTaggedObject
@@ -209,13 +217,6 @@ namespace Qv2rayPlugin::Common::_base_types
         int chaining_port;
         QStringList chains;
         QJS_FUNC_JSON(F(chains, chaining_port), B(BaseTaggedObject))
-    };
-
-    struct MultiplexerObject
-    {
-        bool enabled;
-        int concurrency;
-        QJS_FUNC_JSON(F(enabled, concurrency))
     };
 
     struct OutboundObject : public BaseTaggedObject
@@ -243,9 +244,7 @@ namespace Qv2rayPlugin::Common::_base_types
         BalancerSettings balancerSettings;
         ChainSettings chainSettings;
 
-        MultiplexerObject muxSettings;
-
-        QJS_FUNC_JSON(F(objectType, kernel, externalId, outboundSettings, balancerSettings, chainSettings, muxSettings), B(BaseTaggedObject))
+        QJS_FUNC_JSON(F(objectType, kernel, externalId, outboundSettings, balancerSettings, chainSettings), B(BaseTaggedObject))
     };
 
     struct ProfileContent
@@ -271,19 +270,27 @@ namespace Qv2rayPlugin::Common::_base_types
 
     enum IOBOUND_DATA_TYPE
     {
-        IO_DISPLAYNAME = 0,
-        IO_PROTOCOL = 1,
-        IO_ADDRESS = 2,
-        IO_PORT = 3,
+        // IO_DISPLAYNAME Q_DECL_DEPRECATED = 0,
+        // IO_PROTOCOL Q_DECL_DEPRECATED = 1,
+        // IO_ADDRESS Q_DECL_DEPRECATED = 2,
+        // IO_PORT Q_DECL_DEPRECATED = 3,
         IO_SNI = 4
     };
+    typedef QMap<IOBOUND_DATA_TYPE, QVariant> PluginIOBoundData;
 
     inline size_t qHash(const ProfileId &c, size_t seed) noexcept
     {
         return qHashMulti(seed, c.connectionId, c.groupId);
     }
+    ///
+    /// \brief IOBoundData <Protocol, Address, Port>
+    ///
+    typedef std::tuple<QString, QString, PortRange> IOBoundData;
 
-    typedef QMap<IOBOUND_DATA_TYPE, QVariant> PluginIOBoundData;
+    inline size_t qHash(const IOBoundData &c, size_t seed) noexcept
+    {
+        return qHashMulti(seed, std::get<0>(c), std::get<1>(c), std::get<2>(c).from, std::get<2>(c).to);
+    }
 } // namespace Qv2rayPlugin::Common::_base_types
 
 // Expose all basic type decls to global namespace

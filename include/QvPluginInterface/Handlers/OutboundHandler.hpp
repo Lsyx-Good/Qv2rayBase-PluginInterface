@@ -10,8 +10,8 @@ namespace Qv2rayPlugin::Outbound
     {
       public:
         explicit IOutboundHandler(){};
-        virtual std::optional<QString> Serialize(const QString &name, const OutboundObject &outbound) const = 0;
-        virtual std::optional<std::pair<QString, OutboundObject>> Deserialize(const QString &link) const = 0;
+        virtual std::optional<QString> Serialize(const QString &name, const IOConnectionSettings &outbound) const = 0;
+        virtual std::optional<std::pair<QString, IOConnectionSettings>> Deserialize(const QString &link) const = 0;
 
         virtual std::optional<PluginIOBoundData> GetOutboundInfo(const IOConnectionSettings &outbound) const = 0;
         virtual bool SetOutboundInfo(IOConnectionSettings &outbound, const PluginIOBoundData &info) const = 0;

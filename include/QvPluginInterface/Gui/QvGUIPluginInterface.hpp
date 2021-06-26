@@ -56,9 +56,6 @@ namespace Qv2rayPlugin::Gui
         explicit QvPluginEditor(QWidget *parent = nullptr) : QWidget(parent){};
         virtual ~QvPluginEditor() = default;
 
-        virtual void SetHostAddress(const QString &address, int port) = 0;
-        virtual QPair<QString, int> GetHostAddress() const = 0;
-
         virtual void SetContent(const IOProtocolSettings &) = 0;
         virtual const IOProtocolSettings GetContent() const = 0;
 
