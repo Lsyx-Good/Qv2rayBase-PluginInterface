@@ -3,6 +3,7 @@
 #include "Common/QvPluginBase.hpp"
 #include "Connections/ConnectionsBase.hpp"
 #include "Handlers/EventHandler.hpp"
+#include "Handlers/IProfilePreprocessor.hpp"
 #include "Handlers/KernelHandler.hpp"
 #include "Handlers/LatencyTestHandler.hpp"
 #include "Handlers/OutboundHandler.hpp"
@@ -36,6 +37,10 @@ namespace Qv2rayPlugin
     ///
     inline Qv2rayInterface *PluginInstance;
 
+    ///
+    /// \brief TPluginInstance always points to the instance of current plugin, with casts to the type of given plugin.
+    /// Cast to a wrong type will result in an undefined behavior.
+    ///
     template<typename T>
     inline T *TPluginInstance()
     {
@@ -89,6 +94,10 @@ namespace Qv2rayPlugin
         {
             return m_LatencyTestHandler;
         }
+        virtual std::shared_ptr<Qv2rayPlugin::Profile::IProfilePreprocessor> ProfilePreprocessor() const final
+        {
+            return m_ProfilePreprocessor;
+        }
         virtual Gui::PluginGUIInterface *GetGUIInterface() const final
         {
             return m_GUIInterface;
@@ -97,9 +106,9 @@ namespace Qv2rayPlugin
         {
             return m_Settings;
         }
-        virtual Qv2rayPlugin::Connections::IProfileManager *ConnectionManager() const final
+        virtual Qv2rayPlugin::Connections::IProfileManager *ProfileManager() const final
         {
-            return m_ConnectionManager;
+            return m_ProfileManager;
         }
 
         ///
@@ -133,6 +142,7 @@ namespace Qv2rayPlugin
         QJsonObject m_Settings;
         QDir m_WorkingDirectory;
 
+        std::shared_ptr<Qv2rayPlugin::Profile::IProfilePreprocessor> m_ProfilePreprocessor;
         std::shared_ptr<Qv2rayPlugin::Outbound::IOutboundProcessor> m_OutboundHandler;
         std::shared_ptr<Qv2rayPlugin::Event::IEventHandler> m_EventHandler;
         std::shared_ptr<Qv2rayPlugin::Kernel::IKernelHandler> m_KernelInterface;
@@ -143,7 +153,7 @@ namespace Qv2rayPlugin
         Gui::PluginGUIInterface *m_GUIInterface;
 
       private:
-        Qv2rayPlugin::Connections::IProfileManager *m_ConnectionManager;
+        Qv2rayPlugin::Connections::IProfileManager *m_ProfileManager;
     };
 } // namespace Qv2rayPlugin
 

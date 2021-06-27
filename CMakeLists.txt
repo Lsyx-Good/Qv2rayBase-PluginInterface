@@ -13,11 +13,13 @@ set(INTERFACE_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Utils/QJsonIO.hpp
     ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Utils/JsonConversion.hpp
     ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Utils/ForEachMacros.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/QvPluginInterface.hpp)
+    ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/QvPluginInterface.hpp
+)
 
 set(FEATURE_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Gui/QvGUIPluginInterface.hpp
     ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Handlers/EventHandler.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Handlers/IProfilePreprocessor.hpp
     ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Handlers/KernelHandler.hpp
     ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Handlers/OutboundHandler.hpp
     ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Handlers/SubscriptionHandler.hpp
