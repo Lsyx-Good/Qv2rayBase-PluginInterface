@@ -57,21 +57,23 @@ namespace Qv2rayPlugin::Common::_base_types
     {
         enum StatisticsType
         {
-            API_ALL_INBOUND = 0,
-            API_OUTBOUND_PROXY = 1,
-            API_OUTBOUND_DIRECT = 2,
+            DIRECT,
+            PROXY,
+            ALL
         };
 
-        // clang-format off
-        struct StatsEntry { quint64 up; quint64 down; QJS_FUNC_JSON(F(up, down)) };
-        StatsEntry &operator[](StatisticsType i) { while (entries.count() <= i) entries.append(StatsEntry{}); return entries[i]; }
-        void clear() { entries.clear(); }
-        QJsonObject toJson() const { return JsonStructHelper::Serialize(entries).toObject(); }
-        void loadJson(const QJsonValue &d) { JsonStructHelper::Deserialize(entries, d); }
-        // clang-format on
-
-      private:
-        QList<StatsEntry> entries;
+        quint64 directUp = 0;
+        quint64 directDown = 0;
+        quint64 proxyUp = 0;
+        quint64 proxyDown = 0;
+        void clear()
+        {
+            directUp = 0;
+            directDown = 0;
+            proxyUp = 0;
+            proxyDown = 0;
+        }
+        QJS_FUNC_JSON(F(directUp, directDown, proxyUp, proxyDown))
     };
 
     struct BaseTaggedObject
@@ -125,7 +127,7 @@ namespace Qv2rayPlugin::Common::_base_types
 
     struct PortRange
     {
-        int from, to;
+        int from = 0, to = 0;
 
         // clang-format off
         PortRange() = default;
@@ -171,8 +173,8 @@ namespace Qv2rayPlugin::Common::_base_types
 
     struct MultiplexerObject
     {
-        bool enabled;
-        int concurrency;
+        bool enabled = false;
+        int concurrency = 8;
         QJS_FUNC_JSON(F(enabled, concurrency))
     };
 
@@ -214,7 +216,7 @@ namespace Qv2rayPlugin::Common::_base_types
 
     struct ChainSettings : public BaseTaggedObject
     {
-        int chaining_port;
+        int chaining_port = 15495;
         QStringList chains;
         QJS_FUNC_JSON(F(chains, chaining_port), B(BaseTaggedObject))
     };
@@ -316,6 +318,7 @@ namespace Qv2rayPlugin::Common::_base_types
 using namespace Qv2rayPlugin::Common::_base_types;
 
 Q_DECLARE_METATYPE(ProfileId)
+Q_DECLARE_METATYPE(StatisticsObject)
 Q_DECLARE_METATYPE(ConnectionObject)
 Q_DECLARE_METATYPE(GroupObject)
 Q_DECLARE_METATYPE(RoutingObject)
