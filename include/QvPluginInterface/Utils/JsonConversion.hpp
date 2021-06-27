@@ -151,7 +151,10 @@ struct JsonStructHelper
         else if constexpr (std::is_same_v<_T, QJsonArray>)
             t = d.toArray();
         else if constexpr (is_bindable_template<_T>::value)
+        {
             Deserialize(*t, d);
+            t.EmitNotify();
+        }
         else if constexpr (has_loadJson<_T>::value)
             t.loadJson(d);
         else if constexpr (is_complete<QJsonStructSerializer<_T>>::value)

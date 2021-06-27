@@ -39,7 +39,7 @@ namespace Qv2rayPlugin
     template<typename T>
     inline T *TPluginInstance()
     {
-        return dynamic_cast<T *>(PluginInstance);
+        return static_cast<T *>(PluginInstance);
     }
 
     ///
@@ -47,14 +47,6 @@ namespace Qv2rayPlugin
     ///
     class Qv2rayInterface
     {
-        friend class Qv2rayPlugin::Outbound::IOutboundHandler;
-        friend class Qv2rayPlugin::Kernel::PluginKernel;
-        friend class Qv2rayPlugin::Kernel::IKernelHandler;
-        friend class Qv2rayPlugin::Event::IEventHandler;
-        friend class Qv2rayPlugin::Subscription::SubscriptionDecoder;
-        friend class Qv2rayPlugin::Subscription::ISubscriptionHandler;
-        friend class Qv2rayPlugin::Latency::ILatencyHandler;
-        friend class Qv2rayPlugin::Gui::PluginGUIInterface;
         friend class Qv2rayBase::Plugin::PluginManagerCore;
 
       public:
@@ -77,7 +69,7 @@ namespace Qv2rayPlugin
         ///
         virtual bool InitializePlugin() = 0;
 
-        virtual std::shared_ptr<Qv2rayPlugin::Outbound::IOutboundHandler> OutboundHandler() const final
+        virtual std::shared_ptr<Qv2rayPlugin::Outbound::IOutboundProcessor> OutboundHandler() const final
         {
             return m_OutboundHandler;
         }
@@ -141,7 +133,7 @@ namespace Qv2rayPlugin
         QJsonObject m_Settings;
         QDir m_WorkingDirectory;
 
-        std::shared_ptr<Qv2rayPlugin::Outbound::IOutboundHandler> m_OutboundHandler;
+        std::shared_ptr<Qv2rayPlugin::Outbound::IOutboundProcessor> m_OutboundHandler;
         std::shared_ptr<Qv2rayPlugin::Event::IEventHandler> m_EventHandler;
         std::shared_ptr<Qv2rayPlugin::Kernel::IKernelHandler> m_KernelInterface;
         std::shared_ptr<Qv2rayPlugin::Subscription::ISubscriptionHandler> m_SubscriptionInterface;

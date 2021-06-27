@@ -247,6 +247,21 @@ namespace Qv2rayPlugin::Common::_base_types
         QJS_FUNC_JSON(F(objectType, kernel, externalId, outboundSettings, balancerSettings, chainSettings), B(BaseTaggedObject))
     };
 
+    struct BasicDNSServerObject
+    {
+        QString address;
+        int port = 53;
+        QJS_FUNC_JSON(F(address, port))
+    };
+
+    struct BasicDNSObject
+    {
+        QList<BasicDNSServerObject> servers;
+        QMap<QString, QString> hosts;
+        QJsonObject extraOptions;
+        QJS_FUNC_JSON(F(servers))
+    };
+
     struct ProfileContent
     {
         ProfileContent(){};
@@ -258,7 +273,11 @@ namespace Qv2rayPlugin::Common::_base_types
         QList<InboundObject> inbounds;
         QList<OutboundObject> outbounds;
         RoutingObject routing;
+
         QJsonObject extraOptions;
+        QJsonObject dnsSettings;
+        QJsonObject fakednsSettings;
+
         QJS_FUNC_JSON(F(defaultKernel, inbounds, outbounds, routing))
         static auto fromJson(const QJsonObject &o)
         {
