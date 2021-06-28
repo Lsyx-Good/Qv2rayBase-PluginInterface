@@ -38,7 +38,7 @@ include(GNUInstallDirs)
 
 target_include_directories(${PROJECT_NAME} INTERFACE
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface>"
-    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/QvPluginInterface>"
 )
 
 include(CMakePackageConfigHelpers)
