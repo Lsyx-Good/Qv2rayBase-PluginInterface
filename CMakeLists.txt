@@ -31,16 +31,10 @@ set(FEATURE_HEADERS
 add_library(QvPluginInterface INTERFACE ${INTERFACE_HEADERS} ${FEATURE_HEADERS})
 add_library(Qv2ray::QvPluginInterface ALIAS QvPluginInterface)
 
-set_target_properties(QvPluginInterface PROPERTIES AUTOMOC OFF AUTOUIC OFF AUTORCC OFF)
+set_target_properties(QvPluginInterface PROPERTIES AUTOMOC OFF AUTOUIC OFF AUTORCC OFF VERSION ${PROJECT_VERSION} SOVERSION 0)
 target_link_libraries(QvPluginInterface INTERFACE Qt::Core)
 
 include(GNUInstallDirs)
-
-#foreach(HEADER ${INTERFACE_HEADERS})
-#    target_sources(QvPluginInterface INTERFACE
-#        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/${HEADER}>"
-#        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${HEADER}>")
-#endforeach()
 
 target_include_directories(${PROJECT_NAME} INTERFACE
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface>"
@@ -49,14 +43,16 @@ target_include_directories(${PROJECT_NAME} INTERFACE
 
 include(CMakePackageConfigHelpers)
 
+
+write_basic_package_version_file(
+                ${CMAKE_CURRENT_BINARY_DIR}/QvPluginInterfaceConfigVersion.cmake
+                VERSION ${PROJECT_VERSION}
+                COMPATIBILITY SameMajorVersion)
+
 configure_package_config_file(${CMAKE_CURRENT_LIST_DIR}/cmake/QvPluginInterfaceConfig.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/QvPluginInterfaceConfig.cmake
     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/QvPluginInterface
 )
-
-write_basic_package_version_file(
-  ${CMAKE_CURRENT_BINARY_DIR}/QvPluginInterfaceConfigVersion.cmake
-  COMPATIBILITY SameMajorVersion)
 
 install(TARGETS QvPluginInterface
     EXPORT QvPluginInterfaceTargets
@@ -71,7 +67,9 @@ install(EXPORT QvPluginInterfaceTargets
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/QvPluginInterface
 )
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/QvPluginInterfaceConfig.cmake
+install(FILES 
+        ${CMAKE_CURRENT_BINARY_DIR}/QvPluginInterfaceConfig.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/QvPluginInterfaceConfigVersion.cmake
     COMPONENT "development"
     EXCLUDE_FROM_ALL
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/QvPluginInterface)
