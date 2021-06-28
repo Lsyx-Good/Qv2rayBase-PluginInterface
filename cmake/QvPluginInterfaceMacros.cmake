@@ -1,15 +1,19 @@
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 function(qv2ray_add_plugin_moc_sources TARGET)
-    if(NOT QvPluginInterface_Prefix)
+    if(NOT QvPluginInterface_UseAsLib)
         get_filename_component(QvPluginInterface_Prefix "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../include/QvPluginInterface/" ABSOLUTE)
+    else()
+        get_target_property(QvPluginInterface_Prefix Qv2ray::QvPluginInterface INTERFACE_INCLUDE_DIRECTORIES)
     endif()
     target_sources(${TARGET} PRIVATE ${QvPluginInterface_Prefix}/Utils/BindableProps.hpp)
 endfunction()
 
 function(qv2ray_add_plugin_gui_sources TARGET)
-    if(NOT QvPluginInterface_Prefix)
+    if(NOT QvPluginInterface_UseAsLib)
         get_filename_component(QvPluginInterface_Prefix "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../include/QvPluginInterface/" ABSOLUTE)
+    else()
+        get_target_property(QvPluginInterface_Prefix Qv2ray::QvPluginInterface INTERFACE_INCLUDE_DIRECTORIES)
     endif()
     target_sources(${TARGET} PRIVATE ${QvPluginInterface_Prefix}/Gui/QvGUIPluginInterface.hpp)
 endfunction()
@@ -70,8 +74,10 @@ function(qv2ray_configure_plugin TARGET_NAME)
     endif()
     # ====================================== END PARSING ARGUMENTS
 
-    if(NOT QvPluginInterface_Prefix)
+    if(NOT QvPluginInterface_UseAsLib)
         get_filename_component(QvPluginInterface_Prefix "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../include/QvPluginInterface/" ABSOLUTE)
+    else()
+        get_target_property(QvPluginInterface_Prefix Qv2ray::QvPluginInterface INTERFACE_INCLUDE_DIRECTORIES)
     endif()
 
     qv2ray_add_plugin_moc_sources(${TARGET_NAME})
