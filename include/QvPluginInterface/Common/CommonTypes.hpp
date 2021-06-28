@@ -50,7 +50,7 @@ namespace Qv2rayPlugin::Common::_base_types
         inline void clear() { connectionId = NullConnectionId, groupId = NullGroupId; }
         inline bool isNull() const { return groupId == NullGroupId || connectionId == NullConnectionId; }
         // clang-format on
-        QJS_FUNC_JSON(F(connectionId, groupId))
+        QJS_JSON(F(connectionId, groupId))
     };
 
     struct StatisticsObject
@@ -73,21 +73,21 @@ namespace Qv2rayPlugin::Common::_base_types
             proxyUp = 0;
             proxyDown = 0;
         }
-        QJS_FUNC_JSON(F(directUp, directDown, proxyUp, proxyDown))
+        QJS_JSON(F(directUp, directDown, proxyUp, proxyDown))
     };
 
     struct BaseTaggedObject
     {
         QString name;
         QJsonObject options;
-        QJS_FUNC_JSON(F(name, options))
+        QJS_JSON(F(name, options))
     };
 
     struct BaseConfigTaggedObject : public BaseTaggedObject
     {
         system_clock::time_point created = system_clock::now();
         system_clock::time_point updated = system_clock::now();
-        QJS_FUNC_JSON(F(created, updated), B(BaseTaggedObject))
+        QJS_JSON(F(created, updated), B(BaseTaggedObject))
     };
 
     struct ConnectionObject : public BaseConfigTaggedObject
@@ -96,7 +96,7 @@ namespace Qv2rayPlugin::Common::_base_types
         StatisticsObject statistics;
         long latency = LATENCY_TEST_VALUE_NODATA;
         int _group_ref = 0;
-        QJS_FUNC_JSON(F(last_connected, statistics, latency), B(BaseConfigTaggedObject))
+        QJS_JSON(F(last_connected, statistics, latency), B(BaseConfigTaggedObject))
     };
 
     struct SubscriptionConfigObject : public BaseTaggedObject
@@ -114,7 +114,7 @@ namespace Qv2rayPlugin::Common::_base_types
         QList<QString> excludeKeywords;
         SubscriptionFilterRelation includeRelation = RELATION_OR;
         SubscriptionFilterRelation excludeRelation = RELATION_AND;
-        QJS_FUNC_JSON(F(isSubscription, address, type, updateInterval, includeKeywords, excludeKeywords, includeRelation, excludeRelation), B(BaseTaggedObject))
+        QJS_JSON(F(isSubscription, address, type, updateInterval, includeKeywords, excludeKeywords, includeRelation, excludeRelation), B(BaseTaggedObject))
     };
 
     struct GroupObject : public BaseConfigTaggedObject
@@ -122,7 +122,7 @@ namespace Qv2rayPlugin::Common::_base_types
         QList<ConnectionId> connections;
         RoutingId route_id = NullRoutingId;
         SubscriptionConfigObject subscription_config;
-        QJS_FUNC_JSON(F(connections, route_id, subscription_config), B(BaseConfigTaggedObject))
+        QJS_JSON(F(connections, route_id, subscription_config), B(BaseConfigTaggedObject))
     };
 
     struct PortRange
@@ -137,7 +137,7 @@ namespace Qv2rayPlugin::Common::_base_types
         operator QString() const { return from == to ? QString::number(from) : QString::number(from) + QStringLiteral("-") + QString::number(to); }
         // clang-format on
 
-        QJS_FUNC_JSON(F(from, to))
+        QJS_JSON(F(from, to))
     };
 
     struct RuleObject : public BaseTaggedObject
@@ -160,22 +160,21 @@ namespace Qv2rayPlugin::Common::_base_types
         QStringList processes;
 
         RuleExtraSettings extraSettings = RuleExtraSettings{};
-        QJS_FUNC_JSON(F(enabled, inboundTags, outboundTag, sourceAddresses, targetDomains, targetIPs, sourcePort, targetPort, networks, protocols, processes,
-                        extraSettings))
+        QJS_JSON(F(enabled, inboundTags, outboundTag, sourceAddresses, targetDomains, targetIPs, sourcePort, targetPort, networks, protocols, processes, extraSettings))
     };
 
-    struct RoutingObject : public BaseConfigTaggedObject
+    struct RoutingObject
     {
         QList<RuleObject> rules;
-        int _group_ref = 0;
-        QJS_FUNC_JSON(F(rules), B(BaseConfigTaggedObject))
+        QJsonObject options;
+        QJS_JSON(F(rules, options))
     };
 
     struct MultiplexerObject
     {
         bool enabled = false;
         int concurrency = 8;
-        QJS_FUNC_JSON(F(enabled, concurrency))
+        QJS_JSON(F(enabled, concurrency))
     };
 
     struct IOConnectionSettings
@@ -186,7 +185,7 @@ namespace Qv2rayPlugin::Common::_base_types
         IOProtocolSettings protocolSettings = IOProtocolSettings{};
         IOStreamSettings streamSettings = IOStreamSettings{};
         MultiplexerObject muxSettings = MultiplexerObject{};
-        QJS_FUNC_JSON(F(protocol, address, port, protocolSettings, streamSettings, muxSettings))
+        QJS_JSON(F(protocol, address, port, protocolSettings, streamSettings, muxSettings))
     };
 
     struct InboundObject : public BaseTaggedObject
@@ -204,21 +203,21 @@ namespace Qv2rayPlugin::Common::_base_types
             in.inboundSettings.streamSettings = stream;
             return in;
         }
-        QJS_FUNC_JSON(F(inboundSettings), B(BaseTaggedObject))
+        QJS_JSON(F(inboundSettings), B(BaseTaggedObject))
     };
 
     struct BalancerSettings : public BaseTaggedObject
     {
         QString selectorType;
         BalancerSelectorSettings selectorSettings = BalancerSelectorSettings{};
-        QJS_FUNC_JSON(F(selectorType, selectorSettings))
+        QJS_JSON(F(selectorType, selectorSettings))
     };
 
     struct ChainSettings : public BaseTaggedObject
     {
-        int chaining_port = 15495;
+        int chaining_port = 15490;
         QStringList chains;
-        QJS_FUNC_JSON(F(chains, chaining_port), B(BaseTaggedObject))
+        QJS_JSON(F(chains, chaining_port), B(BaseTaggedObject))
     };
 
     struct OutboundObject : public BaseTaggedObject
@@ -246,14 +245,14 @@ namespace Qv2rayPlugin::Common::_base_types
         BalancerSettings balancerSettings;
         ChainSettings chainSettings;
 
-        QJS_FUNC_JSON(F(objectType, kernel, externalId, outboundSettings, balancerSettings, chainSettings), B(BaseTaggedObject))
+        QJS_JSON(F(objectType, kernel, externalId, outboundSettings, balancerSettings, chainSettings), B(BaseTaggedObject))
     };
 
     struct BasicDNSServerObject
     {
         QString address;
         int port = 53;
-        QJS_FUNC_JSON(F(address, port))
+        QJS_JSON(F(address, port))
     };
 
     struct BasicDNSObject
@@ -261,7 +260,7 @@ namespace Qv2rayPlugin::Common::_base_types
         QList<BasicDNSServerObject> servers;
         QMap<QString, QString> hosts;
         QJsonObject extraOptions;
-        QJS_FUNC_JSON(F(servers, hosts, extraOptions))
+        QJS_JSON(F(servers, hosts, extraOptions))
     };
 
     struct ProfileContent
@@ -280,13 +279,13 @@ namespace Qv2rayPlugin::Common::_base_types
         QJsonObject dnsSettings;
         QJsonObject fakednsSettings;
 
-        QJS_FUNC_JSON(F(defaultKernel, inbounds, outbounds, routing))
         static auto fromJson(const QJsonObject &o)
         {
             ProfileContent profile;
             profile.loadJson(o);
             return profile;
         };
+        QJS_JSON(F(defaultKernel, inbounds, outbounds, routing, extraOptions, dnsSettings, fakednsSettings))
     };
 
     enum IOBOUND_DATA_TYPE

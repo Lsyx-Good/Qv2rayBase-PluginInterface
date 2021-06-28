@@ -19,8 +19,13 @@ struct Bindable : public INotifiable
 {
   public:
     typedef T value_type;
-    Bindable(const T &def = T{}) : value(def){};
+    Bindable(const T &def = T{}) : value(def), defaultvalue(def){};
     Bindable(const Bindable<T> &another) : value(another.value){};
+
+    bool isDefault() const
+    {
+        return value == defaultvalue;
+    }
 
     // clang-format off
     const T* operator->() const { return &value; }
@@ -144,4 +149,5 @@ struct Bindable : public INotifiable
         return value;
     }
     T value;
+    const T defaultvalue = T{};
 };

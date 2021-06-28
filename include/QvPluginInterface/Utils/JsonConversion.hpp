@@ -19,12 +19,24 @@ struct Bindable;
     }
 
 #define __FROMJSON_B(name) name::loadJson(json);
-#define __FROMJSON_F(name) ::JsonStructHelper::Deserialize(this->name, json.toObject()[QStringLiteral(#name)]);
-#define __FROMJSON_P(name) ::JsonStructHelper::Deserialize(this->name, json.toObject()[QStringLiteral(#name)]);
 
-#define __TOJSON_P(name) json.insert(QStringLiteral(#name), ::JsonStructHelper::Serialize(this->name));
-#define __TOJSON_F(name) json.insert(QStringLiteral(#name), ::JsonStructHelper::Serialize(this->name));
+#define __FROMJSON_F(name)                                                                                                                                               \
+    if (json.toObject().contains(QStringLiteral(#name)))                                                                                                                 \
+        ::JsonStructHelper::Deserialize(this->name, json.toObject()[QStringLiteral(#name)]);
+
+#define __FROMJSON_P(name) __FROMJSON_F(name)
+
 #define __TOJSON_B(base) ::JsonStructHelper::MergeJson(json, base::toJson());
+#define __TOJSON_F(name)                                                                                                                                                 \
+    do                                                                                                                                                                   \
+    {                                                                                                                                                                    \
+        const auto _j = ::JsonStructHelper::Serialize(this->name);                                                                                                       \
+        if (!(_j.isUndefined() || (_j.isArray() && _j.toArray().isEmpty()) || (_j.isObject() && _j.toObject().isEmpty())))                                               \
+            json.insert(QStringLiteral(#name), _j);                                                                                                                      \
+    } while (false);
+#define __TOJSON_P(name)                                                                                                                                                 \
+    if (!this->name.isDefault())                                                                                                                                         \
+    __TOJSON_F(name)
 
 // ============================================================================================
 // Load JSON Wrapper
@@ -32,7 +44,9 @@ struct Bindable;
 #define _QJS_FROM_JSON_B(...) FOR_EACH_2(__FROMJSON_B, __VA_ARGS__)
 #define _QJS_FROM_JSON_P(...) FOR_EACH_2(__FROMJSON_P, __VA_ARGS__)
 #define _QJS_FROM_JSON_BF(option) _QJS_FROM_JSON_##option
+// clang-format on
 
+// clang-format off
 // ============================================================================================
 // To JSON Wrapper
 #define _QJS_TO_JSON_F(...) FOR_EACH_2(__TOJSON_F, __VA_ARGS__)
@@ -42,7 +56,7 @@ struct Bindable;
 
 // ============================================================================================
 // QJsonStruct main macro
-#define QJS_FUNC_JSON(...)                                                                                                                                               \
+#define QJS_JSON(...)                                                                                                                                                    \
     QJsonObject toJson() const                                                                                                                                           \
     {                                                                                                                                                                    \
         QJsonObject json;                                                                                                                                                \
@@ -87,9 +101,12 @@ struct JsonStructHelper
 
     // clang-format on
 
-    static void MergeJson(QJsonObject &mergeTo, const QJsonObject &mergeIn)
+    static void MergeJson(QJsonObject &mergeTo, const QJsonValue &mergeIn)
     {
-        for (auto it = mergeIn.constBegin(); it != mergeIn.constEnd(); it++)
+        if (!mergeIn.isObject())
+            return;
+        const auto o = mergeIn.toObject();
+        for (auto it = o.constBegin(); it != o.constEnd(); it++)
             mergeTo[it.key()] = it.value();
     }
 
