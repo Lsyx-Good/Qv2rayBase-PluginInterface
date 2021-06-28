@@ -185,7 +185,7 @@ namespace Qv2rayPlugin::Common::_base_types
         PortRange port;
         IOProtocolSettings protocolSettings = IOProtocolSettings{};
         IOStreamSettings streamSettings = IOStreamSettings{};
-        MultiplexerObject muxSettings;
+        MultiplexerObject muxSettings = MultiplexerObject{};
         QJS_FUNC_JSON(F(protocol, address, port, protocolSettings, streamSettings, muxSettings))
     };
 
@@ -261,7 +261,7 @@ namespace Qv2rayPlugin::Common::_base_types
         QList<BasicDNSServerObject> servers;
         QMap<QString, QString> hosts;
         QJsonObject extraOptions;
-        QJS_FUNC_JSON(F(servers))
+        QJS_FUNC_JSON(F(servers, hosts, extraOptions))
     };
 
     struct ProfileContent
