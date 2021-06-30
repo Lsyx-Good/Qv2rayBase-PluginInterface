@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Common/QvPluginBase.hpp"
-#include "Connections/ConnectionsBase.hpp"
-#include "Handlers/EventHandler.hpp"
-#include "Handlers/IProfilePreprocessor.hpp"
-#include "Handlers/KernelHandler.hpp"
-#include "Handlers/LatencyTestHandler.hpp"
-#include "Handlers/OutboundHandler.hpp"
-#include "Handlers/SubscriptionHandler.hpp"
+#include "QvPlugin/Common/QvPluginBase.hpp"
+#include "QvPlugin/Connections/ConnectionsBase.hpp"
+#include "QvPlugin/Handlers/EventHandler.hpp"
+#include "QvPlugin/Handlers/IProfilePreprocessor.hpp"
+#include "QvPlugin/Handlers/KernelHandler.hpp"
+#include "QvPlugin/Handlers/LatencyTestHandler.hpp"
+#include "QvPlugin/Handlers/OutboundHandler.hpp"
+#include "QvPlugin/Handlers/SubscriptionHandler.hpp"
 
 #include <QDir>
 

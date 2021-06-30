@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CommonSafeType.hpp"
-#include "Utils/JsonConversion.hpp"
+#include "QvPlugin/Utils/JsonConversion.hpp"
 
 #include <QHash>
 #include <QJsonArray>

@@ -1,5 +1,6 @@
 #pragma once
-#include "Common/CommonTypes.hpp"
+
+#include "QvPlugin/Common/CommonTypes.hpp"
 
 #include <QObject>
 #include <QSet>

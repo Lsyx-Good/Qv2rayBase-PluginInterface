@@ -5,27 +5,27 @@ project(QvPluginInterface VERSION 4.0)
 find_package(Qt6 COMPONENTS Core REQUIRED)
 
 set(INTERFACE_HEADERS
-    ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Common/CommonTypes.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Common/CommonSafeType.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Common/QvPluginBase.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Connections/ConnectionsBase.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Utils/BindableProps.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Utils/QJsonIO.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Utils/JsonConversion.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Utils/ForEachMacros.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/QvPluginInterface.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/Common/CommonTypes.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/Common/CommonSafeType.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/Common/QvPluginBase.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/Connections/ConnectionsBase.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/Utils/BindableProps.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/Utils/QJsonIO.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/Utils/JsonConversion.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/Utils/ForEachMacros.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/PluginInterface.hpp
 )
 
 set(FEATURE_HEADERS
-    ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Gui/QvGUIPluginInterface.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Handlers/EventHandler.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Handlers/IProfilePreprocessor.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Handlers/KernelHandler.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Handlers/OutboundHandler.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Handlers/SubscriptionHandler.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Handlers/LatencyTestHandler.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Socksify/HttpProxy.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface/Socksify/SocketStream.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/Gui/QvGUIPluginInterface.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/Handlers/EventHandler.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/Handlers/IProfilePreprocessor.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/Handlers/KernelHandler.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/Handlers/OutboundHandler.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/Handlers/SubscriptionHandler.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/Handlers/LatencyTestHandler.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/Socksify/HttpProxy.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/Socksify/SocketStream.hpp
 )
 
 add_library(QvPluginInterface INTERFACE ${INTERFACE_HEADERS} ${FEATURE_HEADERS})
@@ -37,12 +37,11 @@ target_link_libraries(QvPluginInterface INTERFACE Qt::Core)
 include(GNUInstallDirs)
 
 target_include_directories(${PROJECT_NAME} INTERFACE
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/QvPluginInterface>"
-    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/QvPluginInterface>"
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
 )
 
 include(CMakePackageConfigHelpers)
-
 
 write_basic_package_version_file(
                 ${CMAKE_CURRENT_BINARY_DIR}/QvPluginInterfaceConfigVersion.cmake
@@ -67,7 +66,7 @@ install(EXPORT QvPluginInterfaceTargets
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/QvPluginInterface
 )
 
-install(FILES 
+install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/QvPluginInterfaceConfig.cmake
         ${CMAKE_CURRENT_BINARY_DIR}/QvPluginInterfaceConfigVersion.cmake
     COMPONENT "development"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Common/QvPluginBase.hpp"
+#include "QvPlugin/Common/QvPluginBase.hpp"
 
 #include <QDialog>
 #include <QJsonObject>
