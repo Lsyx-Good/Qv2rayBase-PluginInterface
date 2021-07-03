@@ -157,6 +157,20 @@ namespace Qv2rayPlugin::Connections
         /// \return The routing id associated with that group.
         ///
         virtual const RoutingId GetGroupRoutingId(const GroupId &id) = 0;
+
+        ///
+        /// \brief GetRouting Get the routing object by id
+        /// \param id The RoutingId
+        /// \return A routing object, if there's no routingobject for the ID, the routingobject with DefaultRoutingId will be returned.
+        ///
+        virtual RoutingObject GetRouting(const RoutingId &id) const = 0;
+
+        ///
+        /// \brief UpdateRouting Stores the routing object.
+        /// \param id The id of routing object/
+        /// \param o The routing object.
+        ///
+        virtual void UpdateRouting(const RoutingId &id, const RoutingObject &o) = 0;
     };
 
 } // namespace Qv2rayPlugin::Connections

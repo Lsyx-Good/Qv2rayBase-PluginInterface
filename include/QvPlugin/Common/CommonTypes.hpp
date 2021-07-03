@@ -108,7 +108,7 @@ namespace Qv2rayPlugin::Common::_base_types
         };
         bool isSubscription;
         QString address;
-        QString type = QStringLiteral("sip008");
+        SubscriptionDecoderId type = SubscriptionDecoderId{ QStringLiteral("sip008") };
         float updateInterval = 10;
         QList<QString> includeKeywords;
         QList<QString> excludeKeywords;
@@ -165,9 +165,15 @@ namespace Qv2rayPlugin::Common::_base_types
 
     struct RoutingObject
     {
+        bool overrideRules;
         QList<RuleObject> rules;
-        QJsonObject options;
-        QJS_JSON(F(rules, options))
+
+        bool overrideDNS;
+        QJsonObject dns;
+        QJsonObject fakedns;
+
+        QJsonObject extraOptions;
+        QJS_JSON(F(overrideRules, rules, overrideDNS, dns, fakedns, extraOptions))
     };
 
     struct MultiplexerObject
@@ -276,8 +282,6 @@ namespace Qv2rayPlugin::Common::_base_types
         RoutingObject routing;
 
         QJsonObject extraOptions;
-        QJsonObject dnsSettings;
-        QJsonObject fakednsSettings;
 
         static auto fromJson(const QJsonObject &o)
         {
@@ -285,7 +289,7 @@ namespace Qv2rayPlugin::Common::_base_types
             profile.loadJson(o);
             return profile;
         };
-        QJS_JSON(F(defaultKernel, inbounds, outbounds, routing, extraOptions, dnsSettings, fakednsSettings))
+        QJS_JSON(F(defaultKernel, inbounds, outbounds, routing, extraOptions))
     };
 
     enum IOBOUND_DATA_TYPE

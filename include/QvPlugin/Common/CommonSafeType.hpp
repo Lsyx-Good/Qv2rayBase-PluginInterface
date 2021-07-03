@@ -90,6 +90,7 @@ DeclareSafeID(RoutingId);
 DeclareSafeID(PluginId);
 DeclareSafeID(KernelId);
 DeclareSafeID(LatencyTestEngineId);
+DeclareSafeID(SubscriptionDecoderId);
 
 #undef DeclareSafeJson
 #undef DeclareSafeID

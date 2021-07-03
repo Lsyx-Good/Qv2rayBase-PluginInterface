@@ -110,6 +110,10 @@ namespace Qv2rayPlugin
         {
             return m_ProfileManager;
         }
+        virtual QJsonValue GetHostContext(const QString &key) const final
+        {
+            return m_PluginHostContext.value(key);
+        }
 
         ///
         /// \brief A signal that'll be connected to Qv2ray to provide logging function
@@ -154,6 +158,7 @@ namespace Qv2rayPlugin
 
       private:
         Qv2rayPlugin::Connections::IProfileManager *m_ProfileManager;
+        QJsonObject m_PluginHostContext;
     };
 } // namespace Qv2rayPlugin
 

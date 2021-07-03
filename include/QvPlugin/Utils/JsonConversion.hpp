@@ -12,7 +12,7 @@ template<typename T>
 struct Bindable;
 
 #define _QJS_FUNC_COMPAREImpl(x) (this->x == another.x)
-#define QJS_FUNC_COMPARE(CLASS, ...)                                                                                                                                     \
+#define QJS_COMPARE(CLASS, ...)                                                                                                                                     \
     bool operator==(const CLASS &another) const                                                                                                                          \
     {                                                                                                                                                                    \
         return FOR_EACH_DELIM(_QJS_FUNC_COMPAREImpl, &&, __VA_ARGS__);                                                                                                   \
@@ -77,7 +77,6 @@ struct QJsonStructSerializer
 
 struct JsonStructHelper
 {
-
     // clang-format off
     template<typename, typename = void> struct has_toJson : public std::false_type {};
     template<typename C> struct has_toJson<C, typename std::enable_if_t<std::is_convertible_v<decltype(std::declval<C>().toJson()), QJsonValue>>> : public std::true_type {};
@@ -101,13 +100,37 @@ struct JsonStructHelper
 
     // clang-format on
 
-    static void MergeJson(QJsonObject &mergeTo, const QJsonValue &mergeIn)
+    static void MergeJson(QJsonObject &src, const QJsonValue &otherval)
     {
-        if (!mergeIn.isObject())
+        if (!otherval.isObject())
             return;
-        const auto o = mergeIn.toObject();
-        for (auto it = o.constBegin(); it != o.constEnd(); it++)
-            mergeTo[it.key()] = it.value();
+        // StackOverflow oriented programming: deep merge: https://stackoverflow.com/a/66646700
+        const auto other = otherval.toObject();
+        for (auto it = other.constBegin(); it != other.constEnd(); ++it)
+        {
+            if (!src.contains(it.key()))
+            {
+                src[it.key()] = it.value();
+                continue;
+            }
+
+            if (src.value(it.key()).isObject() && other.value(it.key()).isObject())
+            {
+                QJsonObject one(src.value(it.key()).toObject());
+                QJsonObject two(other.value(it.key()).toObject());
+
+                MergeJson(one, two);
+                src[it.key()] = one;
+            }
+            else if (src.value(it.key()).isArray() && other.value(it.key()).isArray())
+            {
+                QJsonArray arr = other.value(it.key()).toArray();
+                QJsonArray srcArr = src.value(it.key()).toArray();
+                for (const auto val : arr)
+                    srcArr.append(val);
+                src[it.key()] = srcArr;
+            }
+        }
     }
 
     // =========================== Deserialize ===========================
