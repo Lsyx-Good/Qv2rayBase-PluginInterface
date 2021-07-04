@@ -108,7 +108,7 @@ namespace Qv2rayPlugin::Common::_base_types
         };
         bool isSubscription;
         QString address;
-        SubscriptionDecoderId type = SubscriptionDecoderId{ QStringLiteral("sip008") };
+        SubscriptionDecoderId type = SubscriptionDecoderId{ QStringLiteral("ooc-v1") };
         float updateInterval = 10;
         QList<QString> includeKeywords;
         QList<QString> excludeKeywords;
