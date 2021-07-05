@@ -2,20 +2,20 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 function(qv2ray_add_plugin_moc_sources TARGET)
     if(NOT QvPluginInterface_UseAsLib)
-        get_filename_component(QvPluginInterface_Prefix "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../include/QvPlugin/" ABSOLUTE)
+        get_filename_component(QvPluginInterface_Prefix "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../include/" ABSOLUTE)
     else()
         get_target_property(QvPluginInterface_Prefix Qv2ray::QvPluginInterface INTERFACE_INCLUDE_DIRECTORIES)
     endif()
-    target_sources(${TARGET} PRIVATE ${QvPluginInterface_Prefix}/Utils/BindableProps.hpp)
+    target_sources(${TARGET} PRIVATE ${QvPluginInterface_Prefix}/QvPlugin/Utils/BindableProps.hpp)
 endfunction()
 
 function(qv2ray_add_plugin_gui_sources TARGET)
     if(NOT QvPluginInterface_UseAsLib)
-        get_filename_component(QvPluginInterface_Prefix "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../include/QvPlugin/" ABSOLUTE)
+        get_filename_component(QvPluginInterface_Prefix "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../include/" ABSOLUTE)
     else()
         get_target_property(QvPluginInterface_Prefix Qv2ray::QvPluginInterface INTERFACE_INCLUDE_DIRECTORIES)
     endif()
-    target_sources(${TARGET} PRIVATE ${QvPluginInterface_Prefix}/Gui/QvGUIPluginInterface.hpp)
+    target_sources(${TARGET} PRIVATE ${QvPluginInterface_Prefix}/QvPlugin/Gui/QvGUIPluginInterface.hpp)
 endfunction()
 
 function(qv2ray_configure_plugin TARGET_NAME)
@@ -75,11 +75,12 @@ function(qv2ray_configure_plugin TARGET_NAME)
     # ====================================== END PARSING ARGUMENTS
 
     if(NOT QvPluginInterface_UseAsLib)
-        get_filename_component(QvPluginInterface_Prefix "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../include/QvPlugin/" ABSOLUTE)
+        get_filename_component(QvPluginInterface_Prefix "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../include/" ABSOLUTE)
     else()
         get_target_property(QvPluginInterface_Prefix Qv2ray::QvPluginInterface INTERFACE_INCLUDE_DIRECTORIES)
     endif()
 
+    set_target_properties(${TARGET_NAME} PROPERTIES AUTOMOC ON)
     qv2ray_add_plugin_moc_sources(${TARGET_NAME})
 
     if(CMAKE_CXX_COMPILER_ID EQUAL Clang OR CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
@@ -94,27 +95,22 @@ function(qv2ray_configure_plugin TARGET_NAME)
     if(QVPLUGIN_HTTP_TO_SOCKS)
         find_package(Qt6 COMPONENTS Network REQUIRED)
         target_link_libraries(${TARGET_NAME} PRIVATE Qt::Network)
-        target_include_directories(${TARGET_NAME} PRIVATE ${QvPluginInterface_Prefix}/Socksify)
         target_sources(${TARGET_NAME}
-            PUBLIC
-            ${QvPluginInterface_Prefix}/HttpProxy.hpp
-            ${QvPluginInterface_Prefix}/SocketStream.hpp)
+            PRIVATE
+            ${QvPluginInterface_Prefix}/QvPlugin/Socksify/HttpProxy.hpp
+            ${QvPluginInterface_Prefix}/QvPlugin/Socksify/SocketStream.hpp)
     endif()
 
     if(QVPLUGIN_GUI)
-        find_package(Qt6 COMPONENTS Gui REQUIRED)
         target_link_libraries(${TARGET_NAME} PRIVATE Qt::Gui)
-        target_include_directories(${TARGET_NAME} PRIVATE "${QvPluginInterface_Prefix}/Gui")
         qv2ray_add_plugin_gui_sources(${TARGET_NAME})
     endif()
 
     if(QVPLUGIN_Quick)
-        find_package(Qt6 COMPONENTS Quick REQUIRED)
         target_link_libraries(${TARGET_NAME} PRIVATE Qt::Quick)
     endif()
 
     if(QVPLUGIN_Widgets)
-        find_package(Qt6 COMPONENTS Widgets REQUIRED)
         target_link_libraries(${TARGET_NAME} PRIVATE Qt::Widgets)
         set_target_properties(${TARGET_NAME} PROPERTIES AUTOUIC ON)
     endif()
