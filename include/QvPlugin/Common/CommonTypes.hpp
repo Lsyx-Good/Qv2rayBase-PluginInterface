@@ -165,10 +165,10 @@ namespace Qv2rayPlugin::Common::_base_types
 
     struct RoutingObject
     {
-        bool overrideRules;
+        bool overrideRules = false;
         QList<RuleObject> rules;
 
-        bool overrideDNS;
+        bool overrideDNS = false;
         QJsonObject dns;
         QJsonObject fakedns;
 
