@@ -164,7 +164,7 @@ namespace Qv2rayPlugin
     {                                                                                                                                                                    \
         PluginInstance->PluginLog(msg);                                                                                                                                  \
     }                                                                                                                                                                    \
-    static void MessageBox(const QString &title, const QString &message)                                                                                                 \
+    static void ShowMessageBox(const QString &title, const QString &message)                                                                                             \
     {                                                                                                                                                                    \
         PluginInstance->PluginErrorMessageBox(title, message);                                                                                                           \
     }                                                                                                                                                                    \
