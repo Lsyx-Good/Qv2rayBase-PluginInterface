@@ -128,6 +128,21 @@ function(qv2ray_configure_plugin TARGET_NAME)
             install(TARGETS ${TARGET_NAME} LIBRARY DESTINATION ${QVPLUGIN_INSTALL_PREFIX_LINUX})
         elseif(WIN32)
             install(TARGETS ${TARGET_NAME} RUNTIME DESTINATION ${QVPLUGIN_INSTALL_PREFIX_WINDOWS})
+            get_target_property(TGT_BINARY_DIR ${TARGET_NAME} BINARY_DIR)
+            message(STATUS "Binary dir for plugin \"${TARGET_NAME}\": \"${TGT_BINARY_DIR}\"")
+            install(CODE "
+file(GET_RUNTIME_DEPENDENCIES
+    LIBRARIES \"$<TARGET_FILE:${TARGET_NAME}>\"
+    RESOLVED_DEPENDENCIES_VAR \"dependencies\"
+    UNRESOLVED_DEPENDENCIES_VAR \"un_depenendcies\"
+    )
+foreach(dll $\{dependencies\})
+    if(dll MATCHES \"^${TGT_BINARY_DIR}\")
+        message(STATUS \"${TARGET_NAME}: Found dependency dll: '$\{dll\}', copying to '${QVPLUGIN_INSTALL_PREFIX_WINDOWS}/libs'\")
+        file(COPY $\{dll\} DESTINATION \"${CMAKE_INSTALL_PREFIX}/${QVPLUGIN_INSTALL_PREFIX_WINDOWS}/libs\")
+    endif()
+endforeach()
+")
         elseif(APPLE)
             install(TARGETS ${TARGET_NAME} LIBRARY DESTINATION ${QVPLUGIN_INSTALL_PREFIX_MACOS})
         elseif(ANDROID)
@@ -138,7 +153,7 @@ function(qv2ray_configure_plugin TARGET_NAME)
                 "${apk_dir}/libs/${CMAKE_ANDROID_ARCH_ABI}/$<TARGET_FILE_NAME:${TARGET_NAME}>"
                 )
         else()
-            message(FATAL_ERROR "The platform is not supported yet.")
+            message(FATAL_ERROR "This platform is not supported yet.")
         endif()
     endif()
 
