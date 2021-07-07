@@ -82,6 +82,7 @@ function(qv2ray_configure_plugin TARGET_NAME)
 
     set_target_properties(${TARGET_NAME} PROPERTIES AUTOMOC ON)
     qv2ray_add_plugin_moc_sources(${TARGET_NAME})
+    set_property(TARGET ${TARGET_NAME} APPEND PROPERTY AUTOMOC_MACRO_NAMES "QV2RAY_PLUGIN")
 
     if(CMAKE_CXX_COMPILER_ID EQUAL Clang OR CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
         if(UNIX AND NOT APPLE)

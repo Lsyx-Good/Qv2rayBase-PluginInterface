@@ -30,34 +30,18 @@ namespace Qv2rayPlugin
     {
         class PluginGUIInterface;
     }
-    class Qv2rayInterface;
 
     ///
-    /// \brief PluginInstance always points to the instance of current plugin.
+    /// \brief The Qv2rayInterfaceImpl class is the main entry for every Qv2ray plugins.
     ///
-    inline Qv2rayInterface *PluginInstance;
-
-    ///
-    /// \brief TPluginInstance always points to the instance of current plugin, with casts to the type of given plugin.
-    /// Cast to a wrong type will result in an undefined behavior.
-    ///
-    template<typename T>
-    inline T *TPluginInstance()
-    {
-        return static_cast<T *>(PluginInstance);
-    }
-
-    ///
-    /// \brief The Qv2rayInterface class is the main entry for every Qv2ray plugins.
-    ///
-    class Qv2rayInterface
+    class Qv2rayInterfaceImpl
     {
         friend class Qv2rayBase::Plugin::PluginManagerCore;
 
       public:
         /// \internal
         const int QvPluginInterfaceVersion = QV2RAY_PLUGIN_INTERFACE_VERSION;
-        virtual ~Qv2rayInterface() = default;
+        virtual ~Qv2rayInterfaceImpl() = default;
 
         ///
         /// \brief GetMetadata gets metadata of a plugin
@@ -138,11 +122,6 @@ namespace Qv2rayPlugin
         }
 
       protected:
-        explicit Qv2rayInterface()
-        {
-            PluginInstance = this;
-        }
-
         QJsonObject m_Settings;
         QDir m_WorkingDirectory;
 
@@ -160,11 +139,38 @@ namespace Qv2rayPlugin
         Qv2rayPlugin::Connections::IProfileManager *m_ProfileManager;
         QJsonObject m_PluginHostContext;
     };
+
+    template<class Impl>
+    class Qv2rayInterface : public Qv2rayInterfaceImpl
+    {
+      public:
+        static inline Impl *PluginInstance;
+
+      protected:
+        explicit Qv2rayInterface(Impl *impl) : Qv2rayInterfaceImpl()
+        {
+            PluginInstance = impl;
+        }
+    };
 } // namespace Qv2rayPlugin
 
-QT_BEGIN_NAMESPACE
-Q_DECLARE_INTERFACE(Qv2rayPlugin::Qv2rayInterface, Qv2rayInterface_IID)
-QT_END_NAMESPACE
+#define QV2RAY_PLUGIN(CLASS)                                                                                                                                             \
+    Q_INTERFACES(Qv2rayPlugin::Qv2rayInterfaceImpl)                                                                                                                      \
+    Q_PLUGIN_METADATA(IID Qv2rayInterface_IID)                                                                                                                           \
+  public:                                                                                                                                                                \
+    explicit CLASS() : QObject(), Qv2rayInterface(this){};                                                                                                               \
+    ~CLASS(){};                                                                                                                                                          \
+    static void Log(const QString &msg)                                                                                                                                  \
+    {                                                                                                                                                                    \
+        PluginInstance->PluginLog(msg);                                                                                                                                  \
+    }                                                                                                                                                                    \
+    static void MessageBox(const QString &title, const QString &message)                                                                                                 \
+    {                                                                                                                                                                    \
+        PluginInstance->PluginErrorMessageBox(title, message);                                                                                                           \
+    }                                                                                                                                                                    \
+    Q_SIGNAL void PluginLog(QString) override;                                                                                                                           \
+    Q_SIGNAL void PluginErrorMessageBox(QString, QString) override;
 
-#define QvPluginLog(msg) ::Qv2rayPlugin::PluginInstance->PluginLog(msg)
-#define QvPluginMessageBox(title, msg) ::Qv2rayPlugin::PluginInstance->PluginErrorMessageBox(title, msg)
+QT_BEGIN_NAMESPACE
+Q_DECLARE_INTERFACE(Qv2rayPlugin::Qv2rayInterfaceImpl, Qv2rayInterface_IID)
+QT_END_NAMESPACE
