@@ -1,3 +1,6 @@
+# So high, so modern, so "cmake_path()"
+cmake_minimum_required(VERSION 3.20.0)
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 function(qv2ray_add_plugin_moc_sources TARGET)
@@ -25,7 +28,8 @@ function(qv2ray_configure_plugin TARGET_NAME)
         INSTALL_PREFIX_WINDOWS
         INSTALL_PREFIX_MACOS
         INSTALL_PREFIX_ANDROID)
-    set(multiValueArgs)
+    set(multiValueArgs
+        EXTRA_DEPENDENCY_DIRS_WINDOWS)
     cmake_parse_arguments(QVPLUGIN "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     # ====================================== BEGIN PARSING ARGUMENTS
@@ -124,25 +128,37 @@ function(qv2ray_configure_plugin TARGET_NAME)
     endif()
 
     if(NOT QVPLUGIN_NO_INSTALL)
+        cmake_policy(SET CMP0087 NEW)
         if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
             install(TARGETS ${TARGET_NAME} LIBRARY DESTINATION ${QVPLUGIN_INSTALL_PREFIX_LINUX})
         elseif(WIN32)
             install(TARGETS ${TARGET_NAME} RUNTIME DESTINATION ${QVPLUGIN_INSTALL_PREFIX_WINDOWS})
-            get_target_property(TGT_BINARY_DIR ${TARGET_NAME} BINARY_DIR)
-            message(STATUS "Binary dir for plugin \"${TARGET_NAME}\": \"${TGT_BINARY_DIR}\"")
             install(CODE "
-file(GET_RUNTIME_DEPENDENCIES
-    LIBRARIES \"$<TARGET_FILE:${TARGET_NAME}>\"
-    RESOLVED_DEPENDENCIES_VAR \"dependencies\"
-    UNRESOLVED_DEPENDENCIES_VAR \"un_depenendcies\"
-    )
-foreach(dll $\{dependencies\})
-    if(dll MATCHES \"^${TGT_BINARY_DIR}\")
-        message(STATUS \"${TARGET_NAME}: Found dependency dll: '$\{dll\}', copying to '${QVPLUGIN_INSTALL_PREFIX_WINDOWS}/libs'\")
-        file(COPY $\{dll\} DESTINATION \"${CMAKE_INSTALL_PREFIX}/${QVPLUGIN_INSTALL_PREFIX_WINDOWS}/libs\")
-    endif()
-endforeach()
-")
+    set(EXTRA_DIRS \"${QVPLUGIN_EXTRA_DEPENDENCY_DIRS_WINDOWS}\")
+    list(APPEND EXTRA_DIRS \"$<TARGET_PROPERTY:${TARGET_NAME},BINARY_DIR>\")
+    set(PLUGIN_INSTALL_PREFIX \"${CMAKE_INSTALL_PREFIX}/${QVPLUGIN_INSTALL_PREFIX_WINDOWS}/libs\")
+    set(TARGET_NAME ${TARGET_NAME})
+    set(TARGET_FILE \"$<TARGET_FILE:${TARGET_NAME}>\")
+    ")
+
+install(CODE [[
+    file(GET_RUNTIME_DEPENDENCIES
+        LIBRARIES ${TARGET_FILE}
+        RESOLVED_DEPENDENCIES_VAR "dependencies"
+        UNRESOLVED_DEPENDENCIES_VAR "un_depenendcies"
+        DIRECTORIES ${EXTRA_DIRS}
+        )
+    foreach(dll ${dependencies})
+        foreach(dep_path ${EXTRA_DIRS})
+            cmake_path(IS_PREFIX dep_path "${dll}" NORMALIZE IN_DEPSDIR)
+            if(IN_DEPSDIR)
+                message(STATUS "${TARGET_NAME}: Found dependency: '${dll}'.")
+                file(COPY ${dll} DESTINATION ${PLUGIN_INSTALL_PREFIX})
+                break()
+            endif()
+        endforeach()
+    endforeach()
+    ]])
         elseif(APPLE)
             install(TARGETS ${TARGET_NAME} LIBRARY DESTINATION ${QVPLUGIN_INSTALL_PREFIX_MACOS})
         elseif(ANDROID)

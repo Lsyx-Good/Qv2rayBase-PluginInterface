@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10.0)
+cmake_minimum_required(VERSION 3.20.0)
 
 project(QvPluginInterface VERSION 4.0)
 
@@ -46,7 +46,8 @@ include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
                 ${CMAKE_CURRENT_BINARY_DIR}/QvPluginInterfaceConfigVersion.cmake
                 VERSION ${PROJECT_VERSION}
-                COMPATIBILITY SameMajorVersion)
+                COMPATIBILITY SameMajorVersion
+                ARCH_INDEPENDENT)
 
 configure_package_config_file(${CMAKE_CURRENT_LIST_DIR}/cmake/QvPluginInterfaceConfig.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/QvPluginInterfaceConfig.cmake
