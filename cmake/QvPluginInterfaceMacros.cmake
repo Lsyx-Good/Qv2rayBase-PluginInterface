@@ -145,13 +145,13 @@ install(CODE [[
     file(GET_RUNTIME_DEPENDENCIES
         LIBRARIES ${TARGET_FILE}
         RESOLVED_DEPENDENCIES_VAR "dependencies"
-        UNRESOLVED_DEPENDENCIES_VAR "un_depenendcies"
+        UNRESOLVED_DEPENDENCIES_VAR "un_depenendcies_unused"
         DIRECTORIES ${EXTRA_DIRS}
         )
     foreach(dll ${dependencies})
-        foreach(dep_path ${EXTRA_DIRS})
-            cmake_path(IS_PREFIX dep_path "${dll}" NORMALIZE IN_DEPSDIR)
-            if(IN_DEPSDIR)
+        foreach(dir ${EXTRA_DIRS})
+            cmake_path(IS_PREFIX dir "${dll}" NORMALIZE FOUND)
+            if(FOUND)
                 message(STATUS "${TARGET_NAME}: Found dependency: '${dll}'.")
                 file(COPY ${dll} DESTINATION ${PLUGIN_INSTALL_PREFIX})
                 break()
