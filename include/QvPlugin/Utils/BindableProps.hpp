@@ -20,7 +20,7 @@ struct Bindable : public INotifiable
   public:
     typedef T value_type;
     Bindable(const T &def = T{}) : value(def), defaultvalue(def){};
-    Bindable(const Bindable<T> &another) : value(another.value){};
+    Bindable(const Bindable<T> &another) : value(another.value), defaultvalue(another.defaultvalue){};
 
     bool isDefault() const
     {
@@ -139,6 +139,8 @@ struct Bindable : public INotifiable
         ReadBind(target, target_prop, trigger_signal);
     }
 
+    const T defaultvalue;
+
   private:
     T &set(const T &v)
     {
@@ -149,5 +151,4 @@ struct Bindable : public INotifiable
         return value;
     }
     T value;
-    const T defaultvalue = T{};
 };
