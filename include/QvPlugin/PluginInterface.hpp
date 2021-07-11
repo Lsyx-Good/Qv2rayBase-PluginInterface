@@ -145,6 +145,14 @@ namespace Qv2rayPlugin
     {
       public:
         static inline Impl *PluginInstance;
+        static void Log(const QString &msg)
+        {
+            PluginInstance->PluginLog(msg);
+        }
+        static void ShowMessageBox(const QString &title, const QString &message)
+        {
+            PluginInstance->PluginErrorMessageBox(title, message);
+        }
 
       protected:
         explicit Qv2rayInterface(Impl *impl) : Qv2rayInterfaceImpl()
@@ -160,14 +168,7 @@ namespace Qv2rayPlugin
   public:                                                                                                                                                                \
     explicit CLASS() : QObject(), Qv2rayInterface(this){};                                                                                                               \
     ~CLASS(){};                                                                                                                                                          \
-    static void Log(const QString &msg)                                                                                                                                  \
-    {                                                                                                                                                                    \
-        PluginInstance->PluginLog(msg);                                                                                                                                  \
-    }                                                                                                                                                                    \
-    static void ShowMessageBox(const QString &title, const QString &message)                                                                                             \
-    {                                                                                                                                                                    \
-        PluginInstance->PluginErrorMessageBox(title, message);                                                                                                           \
-    }                                                                                                                                                                    \
+                                                                                                                                                                         \
     Q_SIGNAL void PluginLog(QString) override;                                                                                                                           \
     Q_SIGNAL void PluginErrorMessageBox(QString, QString) override;
 
