@@ -64,15 +64,15 @@ namespace Qv2rayPlugin::Gui
         bool isLoading = false;
     };
 
-    template<typename T>
-    inline QPair<ProtocolInfoObject, T *> make_editor_info(const QString &protocol, const QString &displayName)
-    {
-        return { ProtocolInfoObject{ protocol, displayName }, new T() };
-    }
-
     class PluginGUIInterface
     {
       public:
+        template<typename T>
+        static inline QPair<ProtocolInfoObject, T *> make_editor_info(const QString &protocol, const QString &displayName)
+        {
+            return { ProtocolInfoObject{ protocol, displayName }, new T() };
+        }
+
         using typed_plugin_editor = QPair<ProtocolInfoObject, QvPluginEditor *>;
 
         explicit PluginGUIInterface() = default;
