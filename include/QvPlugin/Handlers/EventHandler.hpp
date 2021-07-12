@@ -6,27 +6,6 @@
 
 namespace Qv2rayPlugin::Event
 {
-    struct SystemProxy
-    {
-        enum SystemProxyStateType
-        {
-            SetProxy,
-            ClearProxy
-        };
-        enum SystemProxyType
-        {
-            SystemProxy_HTTP,
-            SystemProxy_SOCKS
-        };
-        struct EventObject
-        {
-            QMap<SystemProxyType, int> PortSettings;
-            SystemProxyStateType State;
-            EventObject(){};
-            EventObject(const QMap<SystemProxyType, int> &port, const SystemProxyStateType &type) : PortSettings(port), State(type){};
-        };
-    };
-
     struct ConnectionStats
     {
         struct EventObject
@@ -95,7 +74,7 @@ namespace Qv2rayPlugin::Event
         };
     } // namespace _details
 
-    class IEventHandler : public _details::Qp<Connectivity::EventObject, SystemProxy::EventObject, ConnectionEntry::EventObject, ConnectionStats::EventObject>
+    class IEventHandler : public _details::Qp<Connectivity::EventObject, ConnectionEntry::EventObject, ConnectionStats::EventObject>
     {
     };
 } // namespace Qv2rayPlugin::Event
