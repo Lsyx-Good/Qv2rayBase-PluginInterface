@@ -10,8 +10,7 @@ class INotifiable : public QObject
   public:
     explicit INotifiable() : QObject(){};
     explicit INotifiable(INotifiable &) : QObject(){};
-  signals:
-    void notify();
+    Q_SIGNAL void notify();
 };
 
 template<typename T>
