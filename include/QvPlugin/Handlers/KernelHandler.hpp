@@ -40,7 +40,7 @@ namespace Qv2rayPlugin::Kernel
         virtual bool Stop() = 0;
         virtual KernelId GetKernelId() const = 0;
 
-      signals:
+      Q_SIGNALS:
         void OnCrashed(const QString &);
         void OnLog(const QString &);
         void OnStatsAvailable(StatisticsObject);
