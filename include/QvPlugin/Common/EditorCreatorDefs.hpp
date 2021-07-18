@@ -19,7 +19,6 @@ namespace Qv2rayPlugin::Common::EditorCreator
 
     struct EditorInfo
     {
-
         QString key;
         QString name;
         ElementType type;
@@ -61,4 +60,6 @@ namespace Qv2rayPlugin::Common::EditorCreator
 
         explicit EditorInfo(){};
     };
+
+    typedef QList<EditorInfo> EditorInfoList;
 } // namespace Qv2rayPlugin::Common::EditorCreator

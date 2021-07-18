@@ -110,7 +110,7 @@ namespace Qv2rayPlugin::Common::_base_types
 
         QString address;
         SubscriptionProviderId providerId{};
-        SubscriptionProviderSettings providerSettings{};
+        SubscriptionProviderOptions providerSettings{};
 
         float updateInterval = 10;
 

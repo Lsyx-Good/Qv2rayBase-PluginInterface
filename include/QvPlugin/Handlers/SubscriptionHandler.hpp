@@ -20,24 +20,53 @@ namespace Qv2rayPlugin::Subscription
     {
       public:
         virtual ~SubscriptionProvider() = default;
-        virtual SubscriptionResult DecodeSubscription(const QByteArray &data) const = 0;
-        virtual SubscriptionResult FetchDecodeSubscription(const SubscriptionProviderSettings &settings) const = 0;
+        virtual SubscriptionResult DecodeSubscription(const QByteArray &data) const
+        {
+            Q_UNUSED(data);
+            Q_UNREACHABLE();
+        }
+        virtual SubscriptionResult FetchDecodeSubscription(const SubscriptionProviderOptions &options) const
+        {
+            Q_UNUSED(options);
+            Q_UNREACHABLE();
+        }
+    };
+
+    enum SubscribingMode
+    {
+        Subscribe_Decoder,
+        Subscribe_FetcherAndDecoder,
     };
 
     struct SubscriptionProviderInfo
     {
-        Common::EditorCreator::EditorInfo settingsInfo;
         SubscriptionProviderId id;
+        SubscribingMode mode;
         QString displayName;
+        Common::EditorCreator::EditorInfoList settings;
         std::function<std::unique_ptr<SubscriptionProvider>(void)> Creator;
-        SubscriptionProviderInfo() = default;
-        SubscriptionProviderInfo(const SubscriptionProviderId &t,                                     //
-                                 const QString &n,                                                    //
-                                 const std::function<std::unique_ptr<SubscriptionProvider>(void)> &c, //
-                                 const Common::EditorCreator::EditorInfo &info = Common::EditorCreator::EditorInfo{})
-            : settingsInfo(info), id(t), displayName(n)
+
+        template<typename T>
+        static SubscriptionProviderInfo CreateDecoder(const SubscriptionProviderId &id, const QString &name)
         {
-            Creator = c;
+            SubscriptionProviderInfo info;
+            info.id = id;
+            info.displayName = name;
+            info.Creator = []() { return std::make_unique<T>(); };
+            info.mode = Subscribe_Decoder;
+            return info;
+        }
+
+        template<typename T>
+        static SubscriptionProviderInfo CreateFetcherDecoder(const SubscriptionProviderId &id, const QString &name, const Common::EditorCreator::EditorInfoList &settings)
+        {
+            SubscriptionProviderInfo info;
+            info.id = id;
+            info.displayName = name;
+            info.settings = settings;
+            info.Creator = []() { return std::make_unique<T>(); };
+            info.mode = Subscribe_FetcherAndDecoder;
+            return info;
         }
     };
 

@@ -83,7 +83,7 @@ DeclareSafeJson(IOProtocolSettings);
 DeclareSafeJson(IOStreamSettings);
 DeclareSafeJson(RuleExtraSettings);
 DeclareSafeJson(BalancerSelectorSettings);
-DeclareSafeJson(SubscriptionProviderSettings);
+DeclareSafeJson(SubscriptionProviderOptions);
 
 DeclareSafeID(GroupId);
 DeclareSafeID(ConnectionId);
