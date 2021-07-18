@@ -11,8 +11,8 @@
 
 namespace Qv2rayPlugin
 {
-    constexpr inline auto QV2RAY_PLUGIN_INTERFACE_VERSION = 5;
     Q_NAMESPACE
+    constexpr inline auto QV2RAY_PLUGIN_INTERFACE_VERSION = 5;
 
     ///
     /// \brief The QV2RAY_PLUGIN_COMPONENT_TYPE enum indicates different core capability of a plugin
@@ -86,25 +86,16 @@ namespace Qv2rayPlugin
         ///
         /// \brief The URL of this plugin, if any.
         ///
-        QString Url;
+        QUrl Url;
 
         ///
         /// \brief A List of QV2RAY_PLUGIN_COMPONENT_TYPEs to indicate what this plugin can do.
         ///
         QList<PLUGIN_COMPONENT_TYPE> Components;
 
-        QvPluginMetadata(QString name,                                            //
-                         QString author,                                          //
-                         PluginId id,                                             //
-                         QString description,                                     //
-                         QString url,                                             //
-                         const QList<PLUGIN_COMPONENT_TYPE> &supportedComponents) //
-            : Name(std::move(name)),                                              //
-              Author(std::move(author)),                                          //
-              InternalID(std::move(id)),                                          //
-              Description(std::move(description)),                                //
-              Url(std::move(url)),                                                //
-              Components(supportedComponents){};                                  //
+        QvPluginMetadata(const QString &name, const QString &author, const PluginId &id, const QString &description, const QUrl &url,
+                         const QList<PLUGIN_COMPONENT_TYPE> &comps)
+            : Name(name), Author(author), InternalID(id), Description(description), Url(url), Components(comps){};
         QvPluginMetadata() = default;
     };
 } // namespace Qv2rayPlugin

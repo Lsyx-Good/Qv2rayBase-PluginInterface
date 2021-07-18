@@ -33,13 +33,13 @@ namespace Qv2rayPlugin::Common::_base_types::safetype
     struct IDType
     {
         // clang-format off
-        explicit IDType() : m_id(QStringLiteral("null")){};
+        IDType() : m_id(u"null"_qs){};
         explicit IDType(const QString &id) : m_id(id){};
         ~IDType() = default;
         inline bool operator==(const IDType<T> &rhs) const { return m_id == rhs.m_id; }
         inline bool operator!=(const IDType<T> &rhs) const { return m_id != rhs.m_id; }
         inline const QString toString() const { return m_id; }
-        inline bool isNull() const { return m_id == QStringLiteral("null"); }
+        inline bool isNull() const { return m_id == u"null"_qs; }
         inline QJsonValue toJson() const { return m_id; }
         inline void loadJson(const QJsonValue &d) { m_id = d.toString(); }
         // clang-format on
@@ -83,6 +83,7 @@ DeclareSafeJson(IOProtocolSettings);
 DeclareSafeJson(IOStreamSettings);
 DeclareSafeJson(RuleExtraSettings);
 DeclareSafeJson(BalancerSelectorSettings);
+DeclareSafeJson(SubscriptionProviderSettings);
 
 DeclareSafeID(GroupId);
 DeclareSafeID(ConnectionId);
@@ -90,7 +91,7 @@ DeclareSafeID(RoutingId);
 DeclareSafeID(PluginId);
 DeclareSafeID(KernelId);
 DeclareSafeID(LatencyTestEngineId);
-DeclareSafeID(SubscriptionDecoderId);
+DeclareSafeID(SubscriptionProviderId);
 
 #undef DeclareSafeJson
 #undef DeclareSafeID

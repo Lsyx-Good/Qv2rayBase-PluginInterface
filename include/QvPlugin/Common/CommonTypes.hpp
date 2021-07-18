@@ -10,30 +10,30 @@
 #include <chrono>
 
 template<>
-struct QJsonStructSerializer<std::chrono::system_clock::time_point>
+struct QJsonStructSerializer<system_clock::time_point>
 {
-    static void Deserialize(std::chrono::system_clock::time_point &t, const QJsonValue &d)
+    static void Deserialize(system_clock::time_point &t, const QJsonValue &d)
     {
-        t = std::chrono::system_clock::from_time_t(d.toVariant().toLongLong());
+        t = system_clock::from_time_t(d.toInteger());
     }
-    static QJsonValue Serialize(const std::chrono::system_clock::time_point &t)
+    static QJsonValue Serialize(const system_clock::time_point &t)
     {
-        return QJsonValue::fromVariant(QVariant::fromValue<qlonglong>(std::chrono::system_clock::to_time_t(t)));
+        return QJsonValue((qint64) system_clock::to_time_t(t));
     }
 };
 
 namespace Qv2rayPlugin::Common::_base_types
 {
-    constexpr unsigned int LATENCY_TEST_VALUE_ERROR = 99999;
-    constexpr unsigned int LATENCY_TEST_VALUE_NODATA = LATENCY_TEST_VALUE_ERROR - 1;
+    constexpr auto LATENCY_TEST_VALUE_ERROR = -1;
+    constexpr auto LATENCY_TEST_VALUE_NODATA = -2;
 
     const static inline ConnectionId NullConnectionId;
 
     const static inline GroupId NullGroupId;
-    const static inline GroupId DefaultGroupId{ QLatin1String{ "000000000000" } };
+    const static inline GroupId DefaultGroupId{ u"000000000000"_qs };
 
     const static inline RoutingId NullRoutingId;
-    const static inline RoutingId DefaultRoutingId{ QLatin1String{ "000000000000" } };
+    const static inline RoutingId DefaultRoutingId{ u"000000000000"_qs };
 
     const static inline KernelId NullKernelId;
 
@@ -101,20 +101,26 @@ namespace Qv2rayPlugin::Common::_base_types
 
     struct SubscriptionConfigObject : public BaseTaggedObject
     {
-        enum SubscriptionFilterRelation
+        enum FilterRelation
         {
             RELATION_AND = 0,
             RELATION_OR = 1
         };
         bool isSubscription;
+
         QString address;
-        SubscriptionDecoderId type = SubscriptionDecoderId{ QStringLiteral("ooc-v1") };
+        SubscriptionProviderId providerId{};
+        SubscriptionProviderSettings providerSettings{};
+
         float updateInterval = 10;
+
         QList<QString> includeKeywords;
+        FilterRelation includeRelation = RELATION_OR;
+
         QList<QString> excludeKeywords;
-        SubscriptionFilterRelation includeRelation = RELATION_OR;
-        SubscriptionFilterRelation excludeRelation = RELATION_AND;
-        QJS_JSON(F(isSubscription, address, type, updateInterval, includeKeywords, excludeKeywords, includeRelation, excludeRelation), B(BaseTaggedObject))
+        FilterRelation excludeRelation = RELATION_AND;
+
+        QJS_JSON(F(isSubscription, address, providerId, updateInterval, includeKeywords, excludeKeywords, includeRelation, excludeRelation), B(BaseTaggedObject))
     };
 
     struct GroupObject : public BaseConfigTaggedObject
@@ -134,7 +140,7 @@ namespace Qv2rayPlugin::Common::_base_types
         PortRange(int i) : from(i), to(i) {};
         void operator=(const int i) { from = to = i; }
         bool operator==(const PortRange &another) const { return from == another.from && to == another.to; }
-        operator QString() const { return from == to ? QString::number(from) : QString::number(from) + QStringLiteral("-") + QString::number(to); }
+        operator QString() const { return from == to ? QString::number(from) : QString::number(from) +  u'-' + QString::number(to); }
         // clang-format on
 
         QJS_JSON(F(from, to))
@@ -159,7 +165,7 @@ namespace Qv2rayPlugin::Common::_base_types
 
         QStringList processes;
 
-        RuleExtraSettings extraSettings = RuleExtraSettings{};
+        RuleExtraSettings extraSettings{};
         QJS_JSON(F(enabled, inboundTags, outboundTag, sourceAddresses, targetDomains, targetIPs, sourcePort, targetPort, networks, protocols, processes, extraSettings))
     };
 
@@ -188,9 +194,9 @@ namespace Qv2rayPlugin::Common::_base_types
         QString protocol;
         QString address;
         PortRange port;
-        IOProtocolSettings protocolSettings = IOProtocolSettings{};
-        IOStreamSettings streamSettings = IOStreamSettings{};
-        MultiplexerObject muxSettings = MultiplexerObject{};
+        IOProtocolSettings protocolSettings{};
+        IOStreamSettings streamSettings{};
+        MultiplexerObject muxSettings{};
         QJS_JSON(F(protocol, address, port, protocolSettings, streamSettings, muxSettings))
     };
 
@@ -215,7 +221,7 @@ namespace Qv2rayPlugin::Common::_base_types
     struct BalancerSettings : public BaseTaggedObject
     {
         QString selectorType;
-        BalancerSelectorSettings selectorSettings = BalancerSelectorSettings{};
+        BalancerSelectorSettings selectorSettings{};
         QJS_JSON(F(selectorType, selectorSettings))
     };
 
@@ -236,7 +242,7 @@ namespace Qv2rayPlugin::Common::_base_types
             CHAIN
         };
 
-        OutboundObject(){};
+        explicit OutboundObject(){};
         OutboundObject(const IOConnectionSettings &settings) : objectType(ORIGINAL), outboundSettings(settings){};
         OutboundObject(const ConnectionId &external) : objectType(EXTERNAL), externalId(external){};
         OutboundObject(const BalancerSettings &balancer) : objectType(BALANCER), balancerSettings(balancer){};

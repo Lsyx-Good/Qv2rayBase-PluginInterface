@@ -28,7 +28,7 @@ namespace Qv2rayPlugin
 
     namespace Gui
     {
-        class PluginGUIInterface;
+        class Qv2rayGUIInterface;
     }
 
     ///
@@ -75,7 +75,7 @@ namespace Qv2rayPlugin
         {
             return m_KernelInterface;
         }
-        virtual std::shared_ptr<Qv2rayPlugin::Subscription::ISubscriptionHandler> SubscriptionAdapter() const final
+        virtual std::shared_ptr<Qv2rayPlugin::Subscription::IPluginSubscriptionInterface> SubscriptionAdapter() const final
         {
             return m_SubscriptionInterface;
         }
@@ -87,7 +87,7 @@ namespace Qv2rayPlugin
         {
             return m_ProfilePreprocessor;
         }
-        virtual Gui::PluginGUIInterface *GetGUIInterface() const final
+        virtual Gui::Qv2rayGUIInterface *GetGUIInterface() const final
         {
             return m_GUIInterface;
         }
@@ -130,11 +130,11 @@ namespace Qv2rayPlugin
         std::shared_ptr<Qv2rayPlugin::Outbound::IOutboundProcessor> m_OutboundHandler;
         std::shared_ptr<Qv2rayPlugin::Event::IEventHandler> m_EventHandler;
         std::shared_ptr<Qv2rayPlugin::Kernel::IKernelHandler> m_KernelInterface;
-        std::shared_ptr<Qv2rayPlugin::Subscription::ISubscriptionHandler> m_SubscriptionInterface;
+        std::shared_ptr<Qv2rayPlugin::Subscription::IPluginSubscriptionInterface> m_SubscriptionInterface;
         std::shared_ptr<Qv2rayPlugin::Latency::ILatencyHandler> m_LatencyTestHandler;
 
         // Not defined as a shared_ptr since not all plugins need QtGui
-        Gui::PluginGUIInterface *m_GUIInterface;
+        Gui::Qv2rayGUIInterface *m_GUIInterface;
 
       private:
         static inline Qv2rayPlugin::Connections::IProfileManager *m_ProfileManager;

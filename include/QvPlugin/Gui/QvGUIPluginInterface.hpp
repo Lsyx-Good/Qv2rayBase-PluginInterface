@@ -9,6 +9,10 @@
 #include <QWidget>
 #include <utility>
 
+class InboundEditor;
+class OutboundEditor;
+class PluginManageWindow;
+
 namespace Qv2rayPlugin::Gui
 {
     struct ProtocolInfoObject
@@ -23,85 +27,57 @@ namespace Qv2rayPlugin::Gui
         explicit PluginSettingsWidget(QWidget *parent) : QWidget(parent){};
         virtual ~PluginSettingsWidget() override = default;
 
-        virtual void SetSettings(const QJsonObject &) = 0;
-        virtual QJsonObject GetSettings() = 0;
+        virtual void Load() = 0;
+        virtual void Store() = 0;
+
+      protected:
+        friend class ::PluginManageWindow;
+        QJsonObject settings;
     };
 
     class PluginMainWindowWidget : public QDialog
     {
       public:
-        explicit PluginMainWindowWidget(QWidget *parent) : QDialog(parent){};
+        explicit PluginMainWindowWidget(QWidget *parent = nullptr) : QDialog(parent){};
         virtual ~PluginMainWindowWidget() override = default;
     };
 
-#define PLUGIN_EDITOR_LOADING_SCOPE(t)                                                                                                                                   \
-    isLoading = true;                                                                                                                                                    \
-    t;                                                                                                                                                                   \
-    isLoading = false;
-
-#define PLUGIN_EDITOR_LOADING_GUARD                                                                                                                                      \
-    if (this->isLoading)                                                                                                                                                 \
-        return;
-
-    template<typename T>
-    inline bool GetProperty(const T *widget, const char *name)
-    {
-        const auto prop = widget->property(name);
-        return prop.isValid() && prop.toBool();
-    }
-
-    class QvPluginEditor : public QWidget
+    class PluginProtocolEditor : public QWidget
     {
       public:
-        explicit QvPluginEditor(QWidget *parent = nullptr) : QWidget(parent){};
-        virtual ~QvPluginEditor() = default;
+        explicit PluginProtocolEditor(QWidget *parent = nullptr) : QWidget(parent){};
+        virtual ~PluginProtocolEditor() override = default;
 
-        virtual void SetContent(const IOProtocolSettings &) = 0;
-        virtual const IOProtocolSettings GetContent() const = 0;
+        virtual void Load() = 0;
+        virtual void Store() = 0;
 
       protected:
-        IOProtocolSettings content;
-        bool isLoading = false;
+        friend class ::InboundEditor;
+        friend class ::OutboundEditor;
+        IOProtocolSettings settings;
     };
 
-    class PluginGUIInterface
+    class Qv2rayGUIInterface
     {
       public:
+        typedef QList<QPair<Qv2rayPlugin::Gui::ProtocolInfoObject, Qv2rayPlugin::Gui::PluginProtocolEditor *>> PluginEditorDescriptor;
+
         template<typename T>
         static inline QPair<ProtocolInfoObject, T *> make_editor_info(const QString &protocol, const QString &displayName)
         {
-            return { ProtocolInfoObject{ protocol, displayName }, new T() };
+            return qMakePair(ProtocolInfoObject{ protocol, displayName }, new T());
         }
 
-        using typed_plugin_editor = QPair<ProtocolInfoObject, QvPluginEditor *>;
-
-        explicit PluginGUIInterface() = default;
-        virtual ~PluginGUIInterface() = default;
+      public:
+        explicit Qv2rayGUIInterface() = default;
+        virtual ~Qv2rayGUIInterface() = default;
 
         virtual QIcon Icon() const = 0;
         virtual QList<Qv2rayPlugin::PLUGIN_GUI_COMPONENT_TYPE> GetComponents() const = 0;
-        virtual std::unique_ptr<PluginSettingsWidget> GetSettingsWidget() const final
-        {
-            return createSettingsWidgets();
-        }
-        virtual QList<typed_plugin_editor> GetInboundEditors() const final
-        {
-            return createInboundEditors();
-        }
-        virtual QList<typed_plugin_editor> GetOutboundEditors() const final
-        {
-            return createOutboundEditors();
-        }
-        virtual std::unique_ptr<PluginMainWindowWidget> GetMainWindowWidget() const final
-        {
-            return createMainWindowWidget();
-        }
-
-      protected:
-        virtual std::unique_ptr<PluginSettingsWidget> createSettingsWidgets() const = 0;
-        virtual QList<typed_plugin_editor> createInboundEditors() const = 0;
-        virtual QList<typed_plugin_editor> createOutboundEditors() const = 0;
-        virtual std::unique_ptr<PluginMainWindowWidget> createMainWindowWidget() const = 0;
+        virtual std::unique_ptr<PluginSettingsWidget> GetSettingsWidget() const = 0;
+        virtual QList<QPair<ProtocolInfoObject, PluginProtocolEditor *>> GetInboundEditors() const = 0;
+        virtual QList<QPair<ProtocolInfoObject, PluginProtocolEditor *>> GetOutboundEditors() const = 0;
+        virtual std::unique_ptr<PluginMainWindowWidget> GetMainWindowWidget() const = 0;
     };
 
 } // namespace Qv2rayPlugin::Gui

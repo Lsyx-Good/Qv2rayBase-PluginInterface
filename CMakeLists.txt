@@ -8,6 +8,7 @@ set(INTERFACE_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/Common/CommonTypes.hpp
     ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/Common/CommonSafeType.hpp
     ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/Common/QvPluginBase.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/Common/EditorCreatorDefs.hpp
     ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/Connections/ConnectionsBase.hpp
     ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/Utils/BindableProps.hpp
     ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/Utils/QJsonIO.hpp
