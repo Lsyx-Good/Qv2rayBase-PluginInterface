@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20.0)
 
 project(QvPluginInterface VERSION 4.0)
 
-find_package(Qt6 COMPONENTS Core REQUIRED)
+find_package(Qt6 6.2 COMPONENTS Core REQUIRED)
 
 set(INTERFACE_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/include/QvPlugin/Common/CommonTypes.hpp
