@@ -7,7 +7,7 @@
 
 namespace Qv2rayPlugin::Common::EditorCreator
 {
-    enum ElementType
+    enum class ElementType
     {
         Bool = QMetaType::Bool,
         Integer = QMetaType::LongLong,
@@ -25,7 +25,7 @@ namespace Qv2rayPlugin::Common::EditorCreator
         QList<EditorInfo> objectElements;
         ElementType arrayElementType;
 
-        template<ElementType t, typename = typename std::enable_if_t<t == Array, void>>
+        template<ElementType t, typename = typename std::enable_if_t<t == ElementType::Array, void>>
         static inline EditorInfo Create(const QString &k, const QString &name, ElementType arrayType, const QList<EditorInfo> &children = {})
         {
             EditorInfo info;
@@ -37,7 +37,7 @@ namespace Qv2rayPlugin::Common::EditorCreator
             return info;
         }
 
-        template<ElementType t, typename = typename std::enable_if_t<t == Object, void>>
+        template<ElementType t, typename = typename std::enable_if_t<t == ElementType::Object, void>>
         static inline EditorInfo Create(const QString &k, const QString &name, const QList<EditorInfo> &children)
         {
             EditorInfo info;
@@ -48,7 +48,7 @@ namespace Qv2rayPlugin::Common::EditorCreator
             return info;
         }
 
-        template<ElementType t, typename = typename std::enable_if_t<t != Object && t != Array, void>>
+        template<ElementType t, typename = typename std::enable_if_t<t != ElementType::Object && t != ElementType::Array, void>>
         static inline EditorInfo Create(const QString &k, const QString &name)
         {
             EditorInfo info;

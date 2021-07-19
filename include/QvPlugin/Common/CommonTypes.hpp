@@ -120,7 +120,8 @@ namespace Qv2rayPlugin::Common::_base_types
         QList<QString> excludeKeywords;
         FilterRelation excludeRelation = RELATION_AND;
 
-        QJS_JSON(F(isSubscription, address, providerId, updateInterval, includeKeywords, excludeKeywords, includeRelation, excludeRelation), B(BaseTaggedObject))
+        QJS_JSON(F(isSubscription, address, providerId, providerSettings, updateInterval, includeKeywords, excludeKeywords, includeRelation, excludeRelation),
+                 B(BaseTaggedObject))
     };
 
     struct GroupObject : public BaseConfigTaggedObject
