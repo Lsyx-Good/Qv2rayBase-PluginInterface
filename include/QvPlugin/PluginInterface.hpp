@@ -49,11 +49,6 @@ namespace Qv2rayPlugin
         ///
         virtual const QvPluginMetadata GetMetadata() const = 0;
 
-        static Qv2rayPlugin::Connections::IProfileManager *ProfileManager()
-        {
-            return m_ProfileManager;
-        }
-
         ///
         /// \brief InitializePlugin should be reimplemented by the plugin writer, this is called only once when
         /// a plugin is found and loaded after a checking for interface version.
@@ -94,6 +89,10 @@ namespace Qv2rayPlugin
         virtual QJsonObject GetSettings() const final
         {
             return m_Settings;
+        }
+        virtual Qv2rayPlugin::Connections::IProfileManager *ProfileManager() const final
+        {
+            return m_ProfileManager;
         }
         virtual QJsonValue GetHostContext(const QString &key) const final
         {
@@ -137,7 +136,7 @@ namespace Qv2rayPlugin
         Gui::Qv2rayGUIInterface *m_GUIInterface;
 
       private:
-        static inline Qv2rayPlugin::Connections::IProfileManager *m_ProfileManager;
+        Qv2rayPlugin::Connections::IProfileManager *m_ProfileManager;
         QJsonObject m_PluginHostContext;
     };
 
