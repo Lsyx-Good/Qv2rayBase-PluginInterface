@@ -8,6 +8,7 @@
 #include "QvPlugin/Handlers/LatencyTestHandler.hpp"
 #include "QvPlugin/Handlers/OutboundHandler.hpp"
 #include "QvPlugin/Handlers/SubscriptionHandler.hpp"
+#include "QvPlugin/Utils/INetworkRequestHelper.hpp"
 
 #include <QDir>
 
@@ -26,6 +27,9 @@ namespace Qv2rayPlugin
     using namespace Qv2rayPlugin::Subscription;
     using namespace Qv2rayPlugin::Latency;
 
+    template<typename>
+    class Qv2rayInterface;
+
     namespace Gui
     {
         class Qv2rayGUIInterface;
@@ -37,6 +41,8 @@ namespace Qv2rayPlugin
     class Qv2rayInterfaceImpl
     {
         friend class Qv2rayBase::Plugin::PluginManagerCore;
+        template<typename>
+        friend class Qv2rayPlugin::Qv2rayInterface;
 
       public:
         /// \internal
@@ -90,10 +96,6 @@ namespace Qv2rayPlugin
         {
             return m_Settings;
         }
-        virtual Qv2rayPlugin::Connections::IProfileManager *ProfileManager() const final
-        {
-            return m_ProfileManager;
-        }
         virtual QJsonValue GetHostContext(const QString &key) const final
         {
             return m_PluginHostContext.value(key);
@@ -137,6 +139,7 @@ namespace Qv2rayPlugin
 
       private:
         Qv2rayPlugin::Connections::IProfileManager *m_ProfileManager;
+        Qv2rayPlugin::Utils::INetworkRequestHelper *m_NetworkRequestHelper;
         QJsonObject m_PluginHostContext;
     };
 
@@ -152,6 +155,16 @@ namespace Qv2rayPlugin
         static void ShowMessageBox(const QString &title, const QString &message)
         {
             PluginInstance->PluginErrorMessageBox(title, message);
+        }
+
+        static Qv2rayPlugin::Connections::IProfileManager *ProfileManager()
+        {
+            return PluginInstance->m_ProfileManager;
+        }
+
+        static Qv2rayPlugin::Utils::INetworkRequestHelper *NetworkRequestHelper()
+        {
+            return PluginInstance->m_NetworkRequestHelper;
         }
 
       protected:

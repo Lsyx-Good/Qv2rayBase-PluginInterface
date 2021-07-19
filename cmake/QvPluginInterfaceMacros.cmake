@@ -94,12 +94,10 @@ function(qv2ray_configure_plugin TARGET_NAME)
         endif()
     endif()
 
-    find_package(Qt6 COMPONENTS Core REQUIRED)
-    target_link_libraries(${TARGET_NAME} PRIVATE Qt::Core Qv2ray::QvPluginInterface)
+    find_package(Qt6 COMPONENTS Core Network REQUIRED)
+    target_link_libraries(${TARGET_NAME} PRIVATE Qt::Core Qt::Network Qv2ray::QvPluginInterface)
 
     if(QVPLUGIN_HTTP_TO_SOCKS)
-        find_package(Qt6 COMPONENTS Network REQUIRED)
-        target_link_libraries(${TARGET_NAME} PRIVATE Qt::Network)
         target_sources(${TARGET_NAME}
             PRIVATE
             ${QvPluginInterface_Prefix}/QvPlugin/Socksify/HttpProxy.hpp
