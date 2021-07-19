@@ -24,8 +24,8 @@ struct QJsonStructSerializer<system_clock::time_point>
 
 namespace Qv2rayPlugin::Common::_base_types
 {
-    constexpr auto LATENCY_TEST_VALUE_ERROR = -1;
-    constexpr auto LATENCY_TEST_VALUE_NODATA = -2;
+    constexpr auto LATENCY_TEST_VALUE_ERROR = 99999;
+    constexpr auto LATENCY_TEST_VALUE_NODATA = LATENCY_TEST_VALUE_ERROR - 1;
 
     const static inline ConnectionId NullConnectionId;
 
@@ -94,7 +94,7 @@ namespace Qv2rayPlugin::Common::_base_types
     {
         system_clock::time_point last_connected;
         StatisticsObject statistics;
-        long latency = LATENCY_TEST_VALUE_NODATA;
+        int latency = LATENCY_TEST_VALUE_NODATA;
         int _group_ref = 0;
         QJS_JSON(F(last_connected, statistics, latency), B(BaseConfigTaggedObject))
     };
