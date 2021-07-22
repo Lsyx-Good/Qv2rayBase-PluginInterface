@@ -93,10 +93,11 @@ namespace Qv2rayPlugin::Common::_base_types
     struct ConnectionObject : public BaseConfigTaggedObject
     {
         system_clock::time_point last_connected;
+        QStringList tags;
         StatisticsObject statistics;
         int latency = LATENCY_TEST_VALUE_NODATA;
         int _group_ref = 0;
-        QJS_JSON(F(last_connected, statistics, latency), B(BaseConfigTaggedObject))
+        QJS_JSON(F(last_connected, tags, statistics, latency), B(BaseConfigTaggedObject))
     };
 
     struct SubscriptionConfigObject : public BaseTaggedObject
