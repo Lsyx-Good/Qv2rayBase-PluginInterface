@@ -154,6 +154,18 @@ struct JsonStructHelper
     // clang-format on
 
     template<typename T>
+    static void Deserialize(QSet<T> &t, const QJsonValue &d)
+    {
+        t.clear();
+        for (const auto &val : d.toArray())
+        {
+            T data;
+            Deserialize(data, val);
+            t.insert(data);
+        }
+    }
+
+    template<typename T>
     static void Deserialize(QList<T> &t, const QJsonValue &d)
     {
         t.clear();
@@ -239,6 +251,17 @@ struct JsonStructHelper
             mapObject.insert(key, valueVal);
         }
         return mapObject;
+    }
+
+    template<typename T>
+    static QJsonValue Serialize(const QSet<T> &t)
+    {
+        QJsonArray listObject;
+        for (const auto &item : t)
+        {
+            listObject.push_back(Serialize(item));
+        }
+        return listObject;
     }
 
     template<typename T>
