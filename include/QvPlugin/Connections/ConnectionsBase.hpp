@@ -95,6 +95,12 @@ namespace Qv2rayPlugin::Connections
         virtual void RenameConnection(const ConnectionId &id, const QString &newName) = 0;
 
         ///
+        /// \brief SetConnectionTags
+        /// \param id The connection id
+        /// \param tags The new tags
+        ///
+        virtual void SetConnectionTags(const ConnectionId &id, const QStringList &tags) = 0;
+        ///
         /// \brief UpdateConnection
         /// \param id The connection id to update.
         /// \param root The new content.
