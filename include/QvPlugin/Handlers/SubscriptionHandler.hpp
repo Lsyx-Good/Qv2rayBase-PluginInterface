@@ -28,7 +28,7 @@ namespace Qv2rayPlugin::Subscription
     };
 
     using SubscriptionResult = EnumVariantMap<SubscriptionResultFields, std::tuple<QStringList,                          // Links
-                                                                                   QList<OutboundObject>,                // Outbounds
+                                                                                   QMultiMap<QString, OutboundObject>,   // Outbounds
                                                                                    QMultiMap<QString, ProfileContent>,   // ProfileContents
                                                                                    QMap<QString, QStringList>,           // Tags
                                                                                    RoutingObject,                        // RoutingObject

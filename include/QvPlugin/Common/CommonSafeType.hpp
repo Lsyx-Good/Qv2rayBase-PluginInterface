@@ -12,7 +12,9 @@ namespace Qv2rayPlugin::Common::_base_types::safetype
     template<typename enum_t, typename tuple_t>
     struct EnumVariantMap : public QMap<enum_t, QVariant>
     {
-      public:
+        template<enum_t f>
+        using result_type_t = typename std::tuple_element_t<f, tuple_t>;
+
         template<enum_t f>
         std::tuple_element_t<f, tuple_t> GetValue() const
         {
@@ -20,9 +22,9 @@ namespace Qv2rayPlugin::Common::_base_types::safetype
         };
 
         template<enum_t f>
-        void SetValue(const std::tuple_element_t<f, tuple_t> &t)
+        void SetValue(const typename std::tuple_element_t<f, tuple_t> &t)
         {
-            this->insert(f, t);
+            this->insert(f, QVariant::fromValue(t));
         };
     };
 
