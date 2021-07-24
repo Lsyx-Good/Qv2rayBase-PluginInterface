@@ -5,16 +5,35 @@
 
 #include <QJsonObject>
 #include <QList>
+#include <QVariantMap>
+
+Q_DECLARE_METATYPE(std::chrono::system_clock::time_point)
 
 namespace Qv2rayPlugin::Subscription
 {
-    struct SubscriptionResult
+    enum SubscriptionResultFields
     {
-        QList<QString> links;
-        QList<OutboundObject> outbounds;
-        QMultiMap<QString, ProfileContent> connections;
-        RoutingObject routing;
+        /// \brief A QStringList containing shared links
+        SR_Links = 0,
+        /// \brief A QList<OutboundObjecct> containing outbounds
+        SR_OutboundObjects = 1,
+        /// \brief A QMultiMap<QString, ProfileContent> containing ProfileContents
+        SR_ProfileContents = 2,
+        /// \brief A QMap<QString, QStringList>
+        SR_Tags = 3,
+        /// \brief A RoutingObject
+        SR_GroupRoutingObject = 4,
+        /// \brief A std::chrono::system_clock::time_point object indicating when the subscription expires
+        SR_Expires = 5,
     };
+
+    using SubscriptionResult = EnumVariantMap<SubscriptionResultFields, std::tuple<QStringList,                          // Links
+                                                                                   QList<OutboundObject>,                // Outbounds
+                                                                                   QMultiMap<QString, ProfileContent>,   // ProfileContents
+                                                                                   QMap<QString, QStringList>,           // Tags
+                                                                                   RoutingObject,                        // RoutingObject
+                                                                                   std::chrono::system_clock::time_point // Expires
+                                                                                   >>;
 
     class SubscriptionProvider
     {

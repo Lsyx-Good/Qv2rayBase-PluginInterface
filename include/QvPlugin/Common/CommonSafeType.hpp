@@ -9,6 +9,23 @@
 
 namespace Qv2rayPlugin::Common::_base_types::safetype
 {
+    template<typename enum_t, typename tuple_t>
+    struct EnumVariantMap : public QMap<enum_t, QVariant>
+    {
+      public:
+        template<enum_t f>
+        std::tuple_element_t<f, tuple_t> GetValue() const
+        {
+            return this->value(f).template value<std::tuple_element_t<f, tuple_t>>();
+        };
+
+        template<enum_t f>
+        void SetValue(const std::tuple_element_t<f, tuple_t> &t)
+        {
+            this->insert(f, t);
+        };
+    };
+
     using namespace std::chrono;
     template<typename>
     struct SafeJsonType : public QJsonObject
