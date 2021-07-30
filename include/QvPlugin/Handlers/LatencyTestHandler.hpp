@@ -22,25 +22,28 @@ namespace Qv2rayPlugin::Latency
         LatencyTestEngineId engine;
         int total;
         int failed;
+        int succeeded;
         QString error;
         long worst = LATENCY_TEST_VALUE_ERROR;
         long best = LATENCY_TEST_VALUE_ERROR;
         long avg = LATENCY_TEST_VALUE_ERROR;
     };
 
-    class LatencyTestEngine
+    class LatencyTestEngine : public QObject
     {
       public:
         explicit LatencyTestEngine() = default;
         virtual ~LatencyTestEngine() = default;
-        virtual LatencyTestResponse TestLatency(const LatencyTestRequest &request)
+        virtual LatencyTestResponse TestLatency(const LatencyTestRequest &)
         {
-            return TestLatencyAsync(nullptr, request);
+            Q_UNREACHABLE();
         };
-        virtual LatencyTestResponse TestLatencyAsync(std::shared_ptr<uvw::Loop>, const LatencyTestRequest &request)
+        virtual void TestLatencyAsync(std::shared_ptr<uvw::Loop>, const LatencyTestRequest &)
         {
-            return TestLatency(request);
+            Q_UNREACHABLE();
         }
+
+        virtual void OnLatencyTestFinishedSignal(const ConnectionId &, const LatencyTestResponse &) = 0;
     };
 
     struct LatencyTestEngineInfo
