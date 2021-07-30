@@ -49,7 +49,7 @@ namespace Qv2rayPlugin::Latency
         bool isAsync;
         QString Name;
         QString Description;
-        std::function<std::unique_ptr<LatencyTestEngine>(void)> Create;
+        std::function<std::shared_ptr<LatencyTestEngine>(void)> Create;
     };
 
     class ILatencyHandler
