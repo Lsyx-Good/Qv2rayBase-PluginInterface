@@ -81,6 +81,7 @@ function(qv2ray_add_plugin TARGET_NAME)
 
     if(${QVPLUGIN_STATIC} OR ${QV2RAY_STATIC_PLUGINS})
         set(QVPLUGIN_STATIC ON)
+        set(QVPLUGIN_NO_INSTALL ON)
         if((NOT DEFINED QVPLUGIN_CLASS_NAME) OR (QVPLUGIN_CLASS_NAME STREQUAL ""))
             message(FATAL_ERROR "A static plugin must provide its main plugin class name.")
         endif()
