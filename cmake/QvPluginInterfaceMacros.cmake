@@ -79,8 +79,6 @@ function(qv2ray_add_plugin TARGET_NAME)
         message("INSTALL_PREFIX_ANDROID is not used")
     endif()
 
-    message("SHIT: ${QV2RAY_STATIC_PLUGINS}")
-
     if(${QVPLUGIN_STATIC} OR ${QV2RAY_STATIC_PLUGINS})
         set(QVPLUGIN_STATIC ON)
         if((NOT DEFINED QVPLUGIN_CLASS_NAME) OR (QVPLUGIN_CLASS_NAME STREQUAL ""))
