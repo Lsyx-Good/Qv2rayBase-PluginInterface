@@ -21,6 +21,14 @@ namespace Qv2rayPlugin::Gui
         QString DisplayName;
     };
 
+#ifdef _QVPLUGIN_NG
+    struct ProfileContentEditorInfo
+    {
+        QString Name;
+        QString Description;
+    };
+#endif
+
     class PluginSettingsWidget : public QWidget
     {
       public:
@@ -57,9 +65,27 @@ namespace Qv2rayPlugin::Gui
         IOProtocolSettings settings;
     };
 
+#ifdef _QVPLUGIN_NG
+    class PluginProfileEditor : public QWidget
+    {
+      public:
+        explicit PluginProfileEditor(QWidget *parent = nullptr) : QWidget(parent){};
+        virtual ~PluginProfileEditor() override = default;
+
+        virtual void Load() = 0;
+        virtual void Store() = 0;
+
+      protected:
+        ProfileContent content;
+    };
+#endif
+
     class Qv2rayGUIInterface
     {
       public:
+#ifdef _QVPLUGIN_NG
+        typedef QList<QPair<Qv2rayPlugin::Gui::ProfileContentEditorInfo, Qv2rayPlugin::Gui::PluginProfileEditor *>> ProfileEditorDescriptor;
+#endif
         typedef QList<QPair<Qv2rayPlugin::Gui::ProtocolInfoObject, Qv2rayPlugin::Gui::PluginProtocolEditor *>> PluginEditorDescriptor;
 
         template<typename T>
@@ -75,9 +101,12 @@ namespace Qv2rayPlugin::Gui
         virtual QIcon Icon() const = 0;
         virtual QList<Qv2rayPlugin::PLUGIN_GUI_COMPONENT_TYPE> GetComponents() const = 0;
         virtual std::unique_ptr<PluginSettingsWidget> GetSettingsWidget() const = 0;
-        virtual QList<QPair<ProtocolInfoObject, PluginProtocolEditor *>> GetInboundEditors() const = 0;
-        virtual QList<QPair<ProtocolInfoObject, PluginProtocolEditor *>> GetOutboundEditors() const = 0;
+        virtual PluginEditorDescriptor GetInboundEditors() const = 0;
+        virtual PluginEditorDescriptor GetOutboundEditors() const = 0;
         virtual std::unique_ptr<PluginMainWindowWidget> GetMainWindowWidget() const = 0;
+#ifdef _QVPLUGIN_NG
+        virtual ProfileEditorDescriptor GetProfileEditors() const = 0;
+#endif
     };
 
 } // namespace Qv2rayPlugin::Gui
