@@ -23,13 +23,15 @@ function(qv2ray_add_plugin_gui_sources TARGET)
 endfunction()
 
 function(qv2ray_add_plugin TARGET_NAME)
-    set(options GUI Quick Widgets NO_INSTALL NO_RPATH HTTP_TO_SOCKS STATIC)
+    set(Stable_PluginInterface_VERSION 5)
+    set(options GUI Quick Widgets NO_INSTALL NO_RPATH HTTP_TO_SOCKS STATIC DEV_INTERFACE)
     set(oneValueArgs
         INSTALL_PREFIX_LINUX
         INSTALL_PREFIX_WINDOWS
         INSTALL_PREFIX_MACOS
         INSTALL_PREFIX_ANDROID
-        CLASS_NAME)
+        CLASS_NAME
+        INTERFACE_VERSION)
     set(multiValueArgs
         EXTRA_DEPENDENCY_DIRS_WINDOWS)
     cmake_parse_arguments(QVPLUGIN "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -86,6 +88,22 @@ function(qv2ray_add_plugin TARGET_NAME)
             message(FATAL_ERROR "A static plugin must provide its main plugin class name.")
         endif()
     endif()
+
+    if(QVPLUGIN_DEV_INTERFACE)
+        if(DEFINED QVPLUGIN_INTERFACE_VERSION)
+            message(FATAL_ERROR "Cannot specify INTERFACE_VERSION and DEV_INTERFACE at the same time.")
+        endif()
+
+        math(EXPR DEV_VERSION "${Stable_PluginInterface_VERSION} + 1")
+        set(QVPLUGIN_INTERFACE_VERSION ${DEV_VERSION})
+        message(STATUS "Use Interface version ${QVPLUGIN_INTERFACE_VERSION} (dev)")
+    else()
+        if(NOT DEFINED QVPLUGIN_INTERFACE_VERSION)
+            set(QVPLUGIN_INTERFACE_VERSION ${Stable_PluginInterface_VERSION})
+        endif()
+        message(STATUS "Use Interface version ${QVPLUGIN_INTERFACE_VERSION}")
+    endif()
+
     # ====================================== END PARSING ARGUMENTS
 
     if(NOT QvPluginInterface_UseAsLib)
@@ -128,6 +146,8 @@ function(qv2ray_add_plugin TARGET_NAME)
         endif()
     endif()
 
+    target_compile_definitions(${TARGET_NAME} PRIVATE -DPLUGIN_INTERFACE_VERSION=${QVPLUGIN_INTERFACE_VERSION})
+
     find_package(Qt6 COMPONENTS Core Network REQUIRED)
     target_link_libraries(${TARGET_NAME} PRIVATE Qt::Core Qt::Network Qv2ray::QvPluginInterface)
 
@@ -139,6 +159,7 @@ function(qv2ray_add_plugin TARGET_NAME)
     endif()
 
     if(QVPLUGIN_GUI)
+        find_package(Qt6 COMPONENTS Gui REQUIRED)
         target_link_libraries(${TARGET_NAME} PRIVATE Qt::Gui)
         qv2ray_add_plugin_gui_sources(${TARGET_NAME})
     endif()
@@ -207,6 +228,7 @@ endforeach()
 
     message(STATUS "==========================================================")
     message(STATUS "Qv2ray Plugin ${TARGET_NAME}")
+    message(STATUS "   API Version: ${QVPLUGIN_INTERFACE_VERSION}")
     message(STATUS "        Static: ${QVPLUGIN_STATIC}")
     message(STATUS "      QWidgets: ${QVPLUGIN_Widgets}")
     message(STATUS "       QtQuick: ${QVPLUGIN_Quick}")

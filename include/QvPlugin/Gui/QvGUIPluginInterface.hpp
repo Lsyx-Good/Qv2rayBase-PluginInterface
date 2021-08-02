@@ -21,7 +21,7 @@ namespace Qv2rayPlugin::Gui
         QString DisplayName;
     };
 
-#ifdef _QVPLUGIN_NG
+#if PLUGIN_INTERFACE_VERSION > 5
     struct ProfileContentEditorInfo
     {
         QString Name;
@@ -65,7 +65,7 @@ namespace Qv2rayPlugin::Gui
         IOProtocolSettings settings;
     };
 
-#ifdef _QVPLUGIN_NG
+#if PLUGIN_INTERFACE_VERSION > 5
     class PluginProfileEditor : public QWidget
     {
       public:
@@ -83,7 +83,7 @@ namespace Qv2rayPlugin::Gui
     class Qv2rayGUIInterface
     {
       public:
-#ifdef _QVPLUGIN_NG
+#if PLUGIN_INTERFACE_VERSION > 5
         typedef QList<QPair<Qv2rayPlugin::Gui::ProfileContentEditorInfo, Qv2rayPlugin::Gui::PluginProfileEditor *>> ProfileEditorDescriptor;
 #endif
         typedef QList<QPair<Qv2rayPlugin::Gui::ProtocolInfoObject, Qv2rayPlugin::Gui::PluginProtocolEditor *>> PluginEditorDescriptor;
@@ -104,7 +104,8 @@ namespace Qv2rayPlugin::Gui
         virtual PluginEditorDescriptor GetInboundEditors() const = 0;
         virtual PluginEditorDescriptor GetOutboundEditors() const = 0;
         virtual std::unique_ptr<PluginMainWindowWidget> GetMainWindowWidget() const = 0;
-#ifdef _QVPLUGIN_NG
+#if PLUGIN_INTERFACE_VERSION > 5
+        virtual QList<QMenu> GetTrayMenus() const = 0;
         virtual ProfileEditorDescriptor GetProfileEditors() const = 0;
 #endif
     };
