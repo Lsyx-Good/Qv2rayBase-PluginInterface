@@ -21,8 +21,8 @@ struct Bindable;
 #define __FROMJSON_B(name) name::loadJson(json);
 
 #define __FROMJSON_F(name)                                                                                                                                               \
-    if (json.toObject().contains(QStringLiteral(#name)))                                                                                                                 \
-        ::JsonStructHelper::Deserialize(this->name, json.toObject()[QStringLiteral(#name)]);
+    if (json.toObject().contains(u"" #name##_qs))                                                                                                                        \
+        ::JsonStructHelper::Deserialize(this->name, json.toObject()[u"" #name##_qs]);
 
 #define __FROMJSON_P(name) __FROMJSON_F(name)
 
@@ -32,7 +32,7 @@ struct Bindable;
     {                                                                                                                                                                    \
         const auto _j = ::JsonStructHelper::Serialize(this->name);                                                                                                       \
         if (!(_j.isUndefined() || (_j.isArray() && _j.toArray().isEmpty()) || (_j.isObject() && _j.toObject().isEmpty())))                                               \
-            json.insert(QStringLiteral(#name), _j);                                                                                                                      \
+            json.insert(u"" #name##_qs, _j);                                                                                                                             \
     } while (false);
 #define __TOJSON_P(name)                                                                                                                                                 \
     if (!this->name.isDefault())                                                                                                                                         \
