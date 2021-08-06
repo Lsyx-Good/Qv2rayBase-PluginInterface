@@ -2,7 +2,6 @@
 cmake_minimum_required(VERSION 3.20.0)
 
 option(QV2RAY_STATIC_PLUGINS "Create Static Plugins")
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 function(qv2ray_add_plugin_moc_sources TARGET)
     if(NOT QvPluginInterface_UseAsLib)
@@ -24,16 +23,9 @@ endfunction()
 
 function(qv2ray_add_plugin TARGET_NAME)
     set(Stable_PluginInterface_VERSION 5)
-    set(options GUI Quick Widgets NO_INSTALL NO_RPATH HTTP_TO_SOCKS STATIC DEV_INTERFACE)
-    set(oneValueArgs
-        INSTALL_PREFIX_LINUX
-        INSTALL_PREFIX_WINDOWS
-        INSTALL_PREFIX_MACOS
-        INSTALL_PREFIX_ANDROID
-        CLASS_NAME
-        INTERFACE_VERSION)
-    set(multiValueArgs
-        EXTRA_DEPENDENCY_DIRS_WINDOWS)
+    set(options GUI Quick Widgets NO_INSTALL NO_RPATH HTTP_TO_SOCKS STATIC DEV_INTERFACE DEBUGGING_EXECUTABLE)
+    set(oneValueArgs INSTALL_PREFIX_LINUX INSTALL_PREFIX_WINDOWS INSTALL_PREFIX_MACOS INSTALL_PREFIX_ANDROID CLASS_NAME INTERFACE_VERSION)
+    set(multiValueArgs EXTRA_DEPENDENCY_DIRS_WINDOWS)
     cmake_parse_arguments(QVPLUGIN "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     # ====================================== BEGIN PARSING ARGUMENTS
@@ -123,8 +115,8 @@ function(qv2ray_add_plugin TARGET_NAME)
         # Write the file header
         file(WRITE ${IMPORT_SRC} [[
 // Qv2ray Static Plugin Import File
-// File Generated via CMake script during build time.
-// Please rerun CMake to update this file, this file will be overwrite at each CMake run
+// File Generated via CMake script during configure time.
+// Please rerun CMake to update this file, this file will be overwrite at each CMake run.
 #include <QtPlugin>
 ]]
             )
@@ -171,6 +163,25 @@ function(qv2ray_add_plugin TARGET_NAME)
     if(QVPLUGIN_Widgets)
         target_link_libraries(${TARGET_NAME} PRIVATE Qt::Widgets)
         set_target_properties(${TARGET_NAME} PROPERTIES AUTOUIC ON)
+    endif()
+
+    if(QVPLUGIN_DEBUGGING_EXECUTABLE)
+        message(STATUS "Adding debugging executable.")
+        set_target_properties(${TARGET_NAME} PROPERTIES ENABLE_EXPORTS 1)
+        get_target_property(OUT ${TARGET_NAME} BINARY_DIR)
+        set(EXEC_SOURCE "${OUT}/${TARGET_NAME}_exec.cpp")
+        file(WRITE ${EXEC_SOURCE} [[
+// Qv2ray Plugin Debugging Executable Helper Launcher
+// File Generated via CMake script during configure time.
+// Please rerun CMake to update this file, this file will be overwrite at each CMake run.
+extern int plugin_main(int argc, char *argv[]);
+int main(int argc, char *argv[])
+{
+    return plugin_main(argc, argv);
+}
+]])
+        add_executable(${TARGET_NAME}_exec /home/leroy/.local/build_temp/build-CommandPlugin-Qt_6_System-Debug/QvPlugin-Command_exec.cpp)
+        target_link_libraries(${TARGET_NAME}_exec PRIVATE ${TARGET_NAME})
     endif()
 
     if(APPLE AND NOT QVPLUGIN_NO_RPATH)
@@ -229,13 +240,14 @@ endforeach()
     message(STATUS "==========================================================")
     message(STATUS "Qv2ray Plugin ${TARGET_NAME}")
     message(STATUS "   API Version: ${QVPLUGIN_INTERFACE_VERSION}")
-    message(STATUS "        Static: ${QVPLUGIN_STATIC}")
-    message(STATUS "      QWidgets: ${QVPLUGIN_Widgets}")
-    message(STATUS "       QtQuick: ${QVPLUGIN_Quick}")
-    message(STATUS "         QtGui: ${QVPLUGIN_GUI}")
+    message(STATUS " Static Plugin: ${QVPLUGIN_STATIC}")
+    message(STATUS "  Debug Helper: ${QVPLUGIN_DEBUGGING_EXECUTABLE}")
+    message(STATUS "  Use QWidgets: ${QVPLUGIN_Widgets}")
+    message(STATUS "   Use QtQuick: ${QVPLUGIN_Quick}")
+    message(STATUS "     Use QtGui: ${QVPLUGIN_GUI}")
     message(STATUS "    HTTP2SOCKS: ${QVPLUGIN_HTTP_TO_SOCKS}")
-    message(STATUS "     NoInstall: ${QVPLUGIN_NO_INSTALL}")
-    message(STATUS "       NoRPath: ${QVPLUGIN_NO_RPATH}")
+    message(STATUS "    No Install: ${QVPLUGIN_NO_INSTALL}")
+    message(STATUS "No macOS RPath: ${QVPLUGIN_NO_RPATH}")
     message(STATUS " Global Prefix: ${CMAKE_INSTALL_PREFIX}")
     message(STATUS "  Linux Prefix: ${QVPLUGIN_INSTALL_PREFIX_LINUX}")
     message(STATUS "  macOS Prefix: ${QVPLUGIN_INSTALL_PREFIX_MACOS}")
