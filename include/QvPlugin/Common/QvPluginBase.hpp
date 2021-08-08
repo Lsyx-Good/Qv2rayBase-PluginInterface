@@ -15,7 +15,7 @@ namespace Qv2rayPlugin
     constexpr inline auto QV2RAY_PLUGIN_INTERFACE_VERSION = 5;
 
     ///
-    /// \brief The QV2RAY_PLUGIN_COMPONENT_TYPE enum indicates different core capability of a plugin
+    /// \brief The QV2RAY_PLUGIN_COMPONENT_TYPE enum indicates different capabilities of a plugin
     ///
     enum PLUGIN_COMPONENT_TYPE
     {
@@ -30,7 +30,7 @@ namespace Qv2rayPlugin
     Q_ENUM_NS(PLUGIN_COMPONENT_TYPE)
 
     ///
-    /// \brief The QV2RAY_PLUGIN_GUI_COMPONENT_TYPE enum indicates different GUI capability of a plugin
+    /// \brief The QV2RAY_PLUGIN_GUI_COMPONENT_TYPE enum indicates different GUI capabilities of a plugin
     ///
     enum PLUGIN_GUI_COMPONENT_TYPE
     {
@@ -53,7 +53,13 @@ namespace Qv2rayPlugin
         ///
         /// \brief The plugin has tray menus
         ///
-        GUI_COMPONENT_TRAY_MENUS = 4
+        GUI_COMPONENT_TRAY_MENUS = 4,
+#if PLUGIN_INTERFACE_VERSION > 5
+        ///
+        /// \brief The plugin has Profile editor.
+        ///
+        GUI_COMPONENT_PROFILE_EDITOR = 5,
+#endif
     };
     Q_ENUM_NS(PLUGIN_GUI_COMPONENT_TYPE)
 
