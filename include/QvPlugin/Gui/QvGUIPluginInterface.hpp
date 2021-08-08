@@ -7,7 +7,6 @@
 #include <QList>
 #include <QMenu>
 #include <QWidget>
-#include <utility>
 
 class InboundEditor;
 class OutboundEditor;
@@ -91,7 +90,7 @@ namespace Qv2rayPlugin::Gui
         template<typename T>
         static inline QPair<ProtocolInfoObject, T *> make_editor_info(const QString &protocol, const QString &displayName)
         {
-            return qMakePair(ProtocolInfoObject{ protocol, displayName }, new T());
+            return std::make_pair(ProtocolInfoObject{ protocol, displayName }, new T());
         }
 
       public:
