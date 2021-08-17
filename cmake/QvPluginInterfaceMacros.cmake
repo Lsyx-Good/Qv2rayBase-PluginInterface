@@ -21,6 +21,12 @@ function(qv2ray_add_plugin_gui_sources TARGET)
     target_sources(${TARGET} PRIVATE ${QvPluginInterface_Prefix}/QvPlugin/Gui/QvGUIPluginInterface.hpp)
 endfunction()
 
+if(NOT TARGET _Qv2ray_AllPlugins)
+    add_library(_Qv2ray_AllPlugins INTERFACE)
+    add_library(Qv2ray::AllPlugins ALIAS _Qv2ray_AllPlugins)
+    message(STATUS "Added Qv2ray Plugins Meta Target")
+endif()
+
 function(qv2ray_add_plugin TARGET_NAME)
     set(Stable_PluginInterface_VERSION 5)
     set(options GUI Quick Widgets NO_INSTALL NO_RPATH HTTP_TO_SOCKS STATIC DEV_INTERFACE DEBUGGING_EXECUTABLE)
@@ -106,6 +112,7 @@ function(qv2ray_add_plugin TARGET_NAME)
 
     if(QVPLUGIN_STATIC)
         add_library(${TARGET_NAME} STATIC)
+        target_link_libraries(_Qv2ray_AllPlugins INTERFACE ${TARGET_NAME})
         target_compile_definitions(${TARGET_NAME} PRIVATE "QT_STATICPLUGIN=1")
         message(STATUS "Generating static plugin importing source code for ${TARGET_NAME}")
 
