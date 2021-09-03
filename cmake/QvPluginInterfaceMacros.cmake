@@ -187,7 +187,7 @@ int main(int argc, char *argv[])
     return plugin_main(argc, argv);
 }
 ]])
-        add_executable(${TARGET_NAME}_exec /home/leroy/.local/build_temp/build-CommandPlugin-Qt_6_System-Debug/QvPlugin-Command_exec.cpp)
+        add_executable(${TARGET_NAME}_exec ${EXEC_SOURCE})
         target_link_libraries(${TARGET_NAME}_exec PRIVATE ${TARGET_NAME})
     endif()
 
