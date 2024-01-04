@@ -303,9 +303,9 @@ namespace Qv2rayPlugin::Common::_base_types
     enum IOBOUND_DATA_TYPE
     {
         // IO_DISPLAYNAME Q_DECL_DEPRECATED = 0,
-        // IO_PROTOCOL Q_DECL_DEPRECATED = 1,
-        // IO_ADDRESS Q_DECL_DEPRECATED = 2,
-        // IO_PORT Q_DECL_DEPRECATED = 3,
+        IO_PROTOCOL  = 1,
+        IO_ADDRESS  = 2,
+        IO_PORT  = 3,
         IO_SNI = 4
     };
     typedef QMap<IOBOUND_DATA_TYPE, QVariant> PluginIOBoundData;
